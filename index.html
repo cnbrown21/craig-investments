@@ -901,12 +901,31 @@ async function fetchFinnhub(tk, sym){
       mode: 'cors',
       signal: AbortSignal.timeout(6000)
     });
+    if(r.status === 403) return false; // paid plan required
     const d = await r.json();
     if(d?.c > 0) {
       prices[tk] = { price: d.c, prev: d.pc || d.c, cy: prices[tk]?.cy || 'CAD' };
       return true;
     }
-  } catch(e) { console.log('Finnhub error for', tk, e?.message); }
+  } catch(e) {}
+  return false;
+}
+
+async function fetchCanadian(tk, sym){
+  // Use stooq.com for Canadian/TSX stocks — free, no auth, CORS-friendly
+  // sym should be like HHIS.TO → convert to stooq format: hhis.to
+  const stooqSym = sym.toLowerCase();
+  try {
+    const r = await fetch(`https://stooq.com/q/l/?s=${stooqSym}&f=sd2t2ohlcv&h&e=json`, {
+      signal: AbortSignal.timeout(6000)
+    });
+    const d = await r.json();
+    const q = d?.symbols?.[0];
+    if(q?.Close > 0) {
+      prices[tk] = { price: parseFloat(q.Close), prev: parseFloat(q.Open) || parseFloat(q.Close), cy: 'CAD' };
+      return true;
+    }
+  } catch(e) {}
   return false;
 }
 
@@ -916,8 +935,7 @@ async function refreshAll(){
   document.getElementById('utxt').textContent = 'Refreshing…';
 
   // BTC via CoinGecko
-  const btcOk = await fetchBTC();
-  console.log('BTC fetch:', btcOk ? '✓' : '✗');
+  fetchBTC();
 
   if(FINNHUB_KEY === 'YOUR_FINNHUB_KEY') {
     ic.classList.remove('spin');
@@ -926,7 +944,6 @@ async function refreshAll(){
     return;
   }
 
-  // All stocks via Finnhub in parallel
   const seen = new Set();
   const fetches = [];
   [...positions, ...watchlist].forEach(p => {
@@ -935,9 +952,14 @@ async function refreshAll(){
     if(tk !== 'BTC-CAD' && !seen.has(tk)) {
       seen.add(tk);
       const sym = ySym(tk, cy);
-      if(sym) fetches.push(
-        fetchFinnhub(tk, sym).then(ok => console.log(`${tk} (${sym}):`, ok ? '✓' : '✗'))
-      );
+      if(!sym) return;
+      if(sym.endsWith('.TO')) {
+        // Canadian stocks → stooq
+        fetches.push(fetchCanadian(tk, sym));
+      } else {
+        // US stocks → Finnhub
+        fetches.push(fetchFinnhub(tk, sym));
+      }
     }
   });
 
