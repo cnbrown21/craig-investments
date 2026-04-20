@@ -869,18 +869,17 @@ document.querySelectorAll('#ccyPill button').forEach(b=>b.classList.toggle('on',
 document.getElementById('fxInp').value=USD;
 document.getElementById('utxt').textContent='Prices: Apr 18 (tap Refresh)';
 
-// ── PRICE / DIV FETCH ─────────────────────────────────────────────────────────
-// Uses a CORS proxy since Yahoo Finance blocks direct browser requests.
-// Falls back gracefully to seeded prices if all sources fail.
+// ── PRICE FETCH — Finnhub API (free, CORS-enabled) ───────────────────────────
+// Get your free key at finnhub.io → sign up → API Keys → copy key
+const FINNHUB_KEY = 'd7ja63pr01qp3g1sdslgd7ja63pr01qp3g1sdsm0';
 
 function ySym(tk,cy){
-  if(tk==='BTC-CAD') return 'BTC-CAD=X';  // correct Yahoo symbol for BTC in CAD
+  if(tk==='BTC-CAD') return null;
   if(cy==='CAD'&&!tk.includes('.')&&!tk.includes('-')) return tk+'.TO';
   return tk;
 }
 
 async function fetchBTC(){
-  // CoinGecko is more reliable for BTC — free, no auth, no CORS issues
   try {
     const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=cad&include_24hr_change=true', {signal: AbortSignal.timeout(8000)});
     const d = await r.json();
@@ -888,40 +887,56 @@ async function fetchBTC(){
     const change24h = d?.bitcoin?.cad_24h_change;
     if(price) {
       const prev = change24h ? price / (1 + change24h/100) : price;
-      prices['BTC-CAD'] = { price, prev, cy: 'CAD' };
+      prices['BTC-CAD'] = { price: Math.round(price*100)/100, prev, cy: 'CAD' };
       return true;
     }
   } catch(e) {}
   return false;
 }
 
-async function fetchOne(tk,cy){
-  if(tk === 'BTC-CAD') { await fetchBTC(); return; }
-  const sym = ySym(tk,cy);
-  const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=2d`;
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
+async function fetchFinnhub(tk, sym){
   try {
-    const r = await fetch(proxyUrl, {signal: AbortSignal.timeout(5000)});
-    const outer = await r.json();
-    const d = JSON.parse(outer.contents);
-    const m = d?.chart?.result?.[0]?.meta;
-    if(m && m.regularMarketPrice) {
-      prices[tk] = { price: m.regularMarketPrice, prev: m.chartPreviousClose || m.previousClose, cy };
+    const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${FINNHUB_KEY}`, {signal: AbortSignal.timeout(6000)});
+    const d = await r.json();
+    if(d?.c > 0) {
+      prices[tk] = { price: d.c, prev: d.pc || d.c, cy: prices[tk]?.cy || 'CAD' };
+      return true;
     }
   } catch(e) {}
+  return false;
 }
 
 async function refreshAll(){
   const ic = document.getElementById('refIcon');
   ic.classList.add('spin');
   document.getElementById('utxt').textContent = 'Refreshing…';
-  const tks = new Set();
-  positions.forEach(p => tks.add(p.tk+'|'+p.cy));
-  watchlist.forEach(w => tks.add(w.tk+'|'+w.cy));
-  // All parallel — fastest possible
-  await Promise.all([...tks].map(k=>{ const[t,c]=k.split('|'); return fetchOne(t,c); }));
+
+  // BTC via CoinGecko
+  await fetchBTC();
+
+  if(FINNHUB_KEY === 'YOUR_FINNHUB_KEY') {
+    ic.classList.remove('spin');
+    document.getElementById('utxt').textContent = '⚠ Add Finnhub key for live prices';
+    renderAll();
+    return;
+  }
+
+  // All stocks via Finnhub in parallel
+  const seen = new Set();
+  const fetches = [];
+  [...positions, ...watchlist].forEach(p => {
+    const tk = p.tk || p.tk;
+    const cy = p.cy;
+    if(tk !== 'BTC-CAD' && !seen.has(tk)) {
+      seen.add(tk);
+      const sym = ySym(tk, cy);
+      if(sym) fetches.push(fetchFinnhub(tk, sym));
+    }
+  });
+
+  await Promise.all(fetches);
   ic.classList.remove('spin');
-  document.getElementById('utxt').textContent = 'Updated '+new Date().toLocaleTimeString();
+  document.getElementById('utxt').textContent = 'Updated ' + new Date().toLocaleTimeString();
   renderAll();
 }
 
