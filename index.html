@@ -874,15 +874,32 @@ document.getElementById('utxt').textContent='Prices: Apr 18 (tap Refresh)';
 // Falls back gracefully to seeded prices if all sources fail.
 
 function ySym(tk,cy){
-  if(tk==='BTC-CAD') return 'BTC-CAD';
+  if(tk==='BTC-CAD') return 'BTC-CAD=X';  // correct Yahoo symbol for BTC in CAD
   if(cy==='CAD'&&!tk.includes('.')&&!tk.includes('-')) return tk+'.TO';
   return tk;
 }
 
-async function fetchOne(tk,cy){
-  const sym = ySym(tk,cy);
+async function fetchBTC(){
+  // CoinGecko is more reliable for BTC — free, no auth, no CORS issues
+  try {
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=cad&include_24hr_change=true', {signal: AbortSignal.timeout(8000)});
+    const d = await r.json();
+    const price = d?.bitcoin?.cad;
+    const change24h = d?.bitcoin?.cad_24h_change;
+    if(price) {
+      const prev = change24h ? price / (1 + change24h/100) : price;
+      prices['BTC-CAD'] = { price, prev, cy: 'CAD' };
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
 
-  // Try allorigins CORS proxy → Yahoo Finance v8
+async function fetchOne(tk,cy){
+  // BTC gets its own dedicated fetch via CoinGecko
+  if(tk === 'BTC-CAD') { await fetchBTC(); return; }
+
+  const sym = ySym(tk,cy);
   const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`;
   const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
 
@@ -894,9 +911,7 @@ async function fetchOne(tk,cy){
     if(m && m.regularMarketPrice) {
       prices[tk] = { price: m.regularMarketPrice, prev: m.chartPreviousClose || m.previousClose, cy };
     }
-  } catch(e) {
-    // silently keep seeded price — user still sees data, just not live
-  }
+  } catch(e) {}
 
   // Try auto-dividends via same proxy
   try {
