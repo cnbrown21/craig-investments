@@ -491,8 +491,8 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   <!-- Desktop table -->
   <div class="tcard tbl-desktop" id="holdTable"><div class="tscroll"><table>
     <thead><tr>
-      <th>Ticker</th><th>Account</th><th class="r">Qty</th>
-      <th class="r">Avg price</th><th class="r">Live price</th><th class="r">Mkt value</th>
+      <th>Ticker</th><th>Account</th><th>Category</th><th class="r">Qty</th>
+      <th class="r">Yield %</th><th class="r">Avg price</th><th class="r">Live price</th><th class="r">Mkt value</th>
       <th class="r">Total paid in</th><th class="r">NAV gain/loss</th>
       <th class="r">Dividends</th><th class="r">Total return</th>
       <th class="r">Ret %</th><th class="r"></th>
@@ -896,13 +896,17 @@ async function fetchBTC(){
 
 async function fetchFinnhub(tk, sym){
   try {
-    const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${FINNHUB_KEY}`, {signal: AbortSignal.timeout(6000)});
+    const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${FINNHUB_KEY}`, {
+      method: 'GET',
+      mode: 'cors',
+      signal: AbortSignal.timeout(6000)
+    });
     const d = await r.json();
     if(d?.c > 0) {
       prices[tk] = { price: d.c, prev: d.pc || d.c, cy: prices[tk]?.cy || 'CAD' };
       return true;
     }
-  } catch(e) {}
+  } catch(e) { console.log('Finnhub error for', tk, e?.message); }
   return false;
 }
 
@@ -912,7 +916,8 @@ async function refreshAll(){
   document.getElementById('utxt').textContent = 'Refreshing…';
 
   // BTC via CoinGecko
-  await fetchBTC();
+  const btcOk = await fetchBTC();
+  console.log('BTC fetch:', btcOk ? '✓' : '✗');
 
   if(FINNHUB_KEY === 'YOUR_FINNHUB_KEY') {
     ic.classList.remove('spin');
@@ -925,12 +930,14 @@ async function refreshAll(){
   const seen = new Set();
   const fetches = [];
   [...positions, ...watchlist].forEach(p => {
-    const tk = p.tk || p.tk;
+    const tk = p.tk;
     const cy = p.cy;
     if(tk !== 'BTC-CAD' && !seen.has(tk)) {
       seen.add(tk);
       const sym = ySym(tk, cy);
-      if(sym) fetches.push(fetchFinnhub(tk, sym));
+      if(sym) fetches.push(
+        fetchFinnhub(tk, sym).then(ok => console.log(`${tk} (${sym}):`, ok ? '✓' : '✗'))
+      );
     }
   });
 
@@ -1011,22 +1018,35 @@ function renderKPI(){
 
 function renderHoldings(){
   const b=document.getElementById('holdBody');
-  if(!positions.length){b.innerHTML='<tr><td colspan="12" class="empty">No positions yet.</td></tr>';return;}
+  if(!positions.length){b.innerHTML='<tr><td colspan="14" class="empty">No positions yet.</td></tr>';return;}
+  // Calculate total portfolio value for category share
+  const totalMktDisp = positions.reduce((s,p)=>{const st=ST_stats(p);return s+DV(st.mktVal||0,p.cy);},0)||1;
   b.innerHTML=positions.map(p=>{
     const s=ST_stats(p);
     const lp=prices[p.tk],dc=lp?lp.price-lp.prev:null,dp=dc&&lp.prev?dc/lp.prev*100:null;
     const priceCol=s.price?`<div class="pb"><span class="pm num">${DM(s.price,p.cy)}</span><span class="pd ${C(dc)}">${dc!=null?(dc>=0?'+':'')+N(dc,2)+' ('+Pct(dp)+')':''}</span></div>`:'<span class="dim" style="font-size:11px">—</span>';
-    // avg price vs live price — show diff
     const priceDiff = s.price ? s.price - p.cost : null;
     const avgCol = `<div class="pb"><span class="pm num dim">$${N(p.cost)} <span class="ccy">${p.cy}</span></span>${priceDiff!=null?`<span class="pd ${C(priceDiff)}">${priceDiff>=0?'+':''} ${N(priceDiff,2)} vs live</span>`:''}</div>`;
     const aD=autDiv(p),mD=manDivs(p);
     const divCol=`<div class="db"><span class="num gold">${DM(s.divs,p.cy)}</span>${aD>0?`<span class="da">↻ ${DM(aD,p.cy,true)} auto</span>`:''}${mD>0?`<span class="dm">✎ ${DM(mD,p.cy,true)} manual</span>`:''}</div>`;
     const trCol=`<div class="trb"><span class="trm ${C(s.totalRet)}">${s.totalRet!=null?DM(s.totalRet,p.cy):'—'}</span>${s.divs>0?`<span class="trs">NAV ${s.navGL!=null?(s.navGL>=0?'+':'')+DM(s.navGL,p.cy,true):'—'} + ${DM(s.divs,p.cy,true)} div</span>`:''}</div>`;
     const flags=`${s.isAlert?`<span class="tflag tf-dn">▼ Alert</span>`:''}${s.isTarget?`<span class="tflag tf-up">↑ Target hit</span>`:''}${p.notes?`<span class="tflag tf-note">✎ Note</span>`:''}`;
+    // Category badge
+    const cat = guessCat(p);
+    const catColors = {yield:'var(--gold)',index:'var(--blue)',crypto:'var(--dn)',single:'var(--purple)'};
+    const catLabels = {yield:'Yield',index:'Index',crypto:'Crypto',single:'Stock'};
+    const catCol = `<span class="badge" style="background:${catColors[cat]}22;color:${catColors[cat]}">${catLabels[cat]||cat}</span>`;
+    // Portfolio share %
+    const share = s.mktVal ? DV(s.mktVal,p.cy)/totalMktDisp*100 : 0;
+    // Yield — show both est % and actual yield on cost
+    const actualYieldPct = s.paidIn && s.divs > 0 ? (s.divs/s.paidIn*100) : null;
+    const yieldCol = `<div class="pb"><span class="pm num gold">${p.yld||0}%</span>${actualYieldPct!=null?`<span class="pd gold">${N(actualYieldPct,1)}% on cost</span>`:''}</div>`;
     return`<tr class="${s.isAlert?'alert-row':''}">
       <td><div class="tkc"><span class="tk" onclick="openSum(${p.id})">${p.tk}</span><span class="tkn">${p.nm}</span>${flags?`<div class="tflags">${flags}</div>`:''}</div></td>
       <td><span class="badge b-${p.ac}">${p.ac}</span></td>
+      <td>${catCol} <span class="dim" style="font-size:10px;font-family:var(--mono)">${N(share,1)}%</span></td>
       <td class="r num">${N(p.qty,p.qty<10?5:2)}</td>
+      <td class="r">${yieldCol}</td>
       <td class="r">${avgCol}</td>
       <td class="r">${priceCol}</td>
       <td class="r num">${s.mktVal!=null?DM(s.mktVal,p.cy):'—'}</td>
@@ -1066,30 +1086,50 @@ function renderAccounts(){
 }
 
 function renderIncome(){
-  let recv=0,est=0;
-  positions.forEach(p=>{const s=ST_stats(p);recv+=DV(s.divs,p.cy);if(s.mktVal)est+=DV(s.mktVal*(p.yld||0)/100,p.cy);});
-  const totalPaid=positions.reduce((s,p)=>s+DV(p.qty*p.cost,p.cy),0);
+  let recv=0, estAnnual=0;
+  positions.forEach(p=>{
+    const s=ST_stats(p);
+    recv += DV(s.divs, p.cy);
+    // Estimate: if we have actual distributions logged, annualize those
+    // Otherwise fall back to NAV × yield %
+    if(s.divs > 0) {
+      // Annualize based on logged distributions — more accurate than yield %
+      estAnnual += DV(s.divs, p.cy) * 1.0; // use actual received as base
+    } else if(s.mktVal) {
+      estAnnual += DV(s.mktVal*(p.yld||0)/100, p.cy);
+    }
+  });
+  // Also calculate pure NAV-based estimate for comparison
+  const navEst = positions.reduce((s,p)=>{const st=ST_stats(p);return s+(st.mktVal?DV(st.mktVal*(p.yld||0)/100,p.cy):0);},0);
+  const totalPaid = positions.reduce((s,p)=>s+DV(p.qty*p.cost,p.cy),0);
   const dc=displayCcy;
   const fmtIC=v=>{const a=Math.abs(v);return(v<0?'-':'')+'$'+N(a>=1000?a/1000:a,a>=1000?1:2)+(a>=1000?'K':'')+' '+dc;};
   document.getElementById('incKpi').innerHTML=`
-    <div class="ic"><div class="icl">Total received</div><div class="icv">${fmtIC(recv)}</div><div class="ics">All time · all accounts</div></div>
-    <div class="ic"><div class="icl">Est. annual</div><div class="icv">${fmtIC(est)}</div><div class="ics">Current NAV × yield %</div></div>
-    <div class="ic"><div class="icl">Est. monthly</div><div class="icv">${fmtIC(est/12)}</div><div class="ics">Average cash flow</div></div>
-    <div class="ic"><div class="icl">Yield on cost</div><div class="icv">${Pct(totalPaid?est/totalPaid*100:0)}</div><div class="ics">vs. total paid in</div></div>
+    <div class="ic"><div class="icl">Total received</div><div class="icv">${fmtIC(recv)}</div><div class="ics">All logged distributions</div></div>
+    <div class="ic"><div class="icl">Est. annual (NAV based)</div><div class="icv">${fmtIC(navEst)}</div><div class="ics">Current NAV × yield %</div></div>
+    <div class="ic"><div class="icl">Est. monthly</div><div class="icv">${fmtIC(navEst/12)}</div><div class="ics">Average cash flow</div></div>
+    <div class="ic"><div class="icl">Yield on cost</div><div class="icv">${Pct(totalPaid?navEst/totalPaid*100:0)}</div><div class="ics">vs. total paid in</div></div>
   `;
-  const byPos=positions.map(p=>{const s=ST_stats(p);return{tk:p.tk,est:DV(s.mktVal?(s.mktVal*(p.yld||0)/100):0,p.cy),recv:DV(s.divs,p.cy)};}).filter(x=>x.est>0||x.recv>0).sort((a,b)=>b.est-a.est).slice(0,12);
-  const mx=Math.max(...byPos.map(x=>x.est),1);
+  // Bar chart — show both actual received AND estimated annual side by side
+  const byPos=positions.map(p=>{
+    const s=ST_stats(p);
+    const navEstP = DV(s.mktVal?(s.mktVal*(p.yld||0)/100):0, p.cy);
+    const recvP = DV(s.divs, p.cy);
+    return{tk:p.tk, est:navEstP, recv:recvP};
+  }).filter(x=>x.est>0||x.recv>0).sort((a,b)=>(b.recv||b.est)-(a.recv||a.est)).slice(0,12);
+  const mx=Math.max(...byPos.map(x=>Math.max(x.est,x.recv)),1);
   document.getElementById('barRows').innerHTML=byPos.map(x=>`
     <div class="barrow">
       <span class="barlbl">${x.tk}</span>
-      <div class="bartrk"><div class="barfill" style="width:${Math.max(3,x.est/mx*100)}%">${fmtIC(x.est)}/yr</div></div>
-      <span class="barrecv">${x.recv>0?fmtIC(x.recv)+' rcvd':'—'}</span>
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+        ${x.recv>0?`<div class="bartrk"><div class="barfill" style="width:${Math.max(3,x.recv/mx*100)}%;background:var(--gold)">${fmtIC(x.recv)} rcvd</div></div>`:''}
+        <div class="bartrk"><div class="barfill" style="width:${Math.max(3,x.est/mx*100)}%;background:var(--ink4);opacity:.7">${fmtIC(x.est)}/yr est</div></div>
+      </div>
     </div>`).join('');
   const all=[];
   positions.forEach(p=>{p.dists.forEach(d=>all.push({...d,tk:p.tk,ac:p.ac,cy:p.cy,src:'manual'}));if(p.src==='auto'&&autoDivs[p.tk])all.push({tk:p.tk,ac:p.ac,cy:p.cy,src:'auto',date:'auto-fetched',amt:autDiv(p).toFixed(2),note:`${N(p.qty,0)} shares × hist. div`});});
   all.sort((a,b)=>new Date(b.date)-new Date(a.date));
   document.getElementById('incBody').innerHTML=all.length?all.map(d=>`<tr><td><span class="num" style="font-weight:500;">${d.tk}</span></td><td><span class="badge b-${d.ac}">${d.ac}</span></td><td class="r num">${d.date}</td><td class="r num gold">${DM(parseFloat(d.amt),d.cy)}</td><td class="r"><span class="ccy">${d.cy}</span></td><td><span style="font-size:9px;font-family:var(--mono);color:${d.src==='auto'?'var(--up)':'var(--gold)'}">${d.src==='auto'?'↻ auto':'✎ manual'}</span></td><td style="font-size:11px;color:var(--ink3)">${d.note||'—'}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">No dividends logged yet.</td></tr>';
-  // Inline chart
   setTimeout(()=>renderIncomeBarChart('incomeBarChart'), 50);
 }
 
