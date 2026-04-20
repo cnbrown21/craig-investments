@@ -896,15 +896,12 @@ async function fetchBTC(){
 }
 
 async function fetchOne(tk,cy){
-  // BTC gets its own dedicated fetch via CoinGecko
   if(tk === 'BTC-CAD') { await fetchBTC(); return; }
-
   const sym = ySym(tk,cy);
-  const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`;
+  const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=2d`;
   const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yUrl)}`;
-
   try {
-    const r = await fetch(proxyUrl, {signal: AbortSignal.timeout(8000)});
+    const r = await fetch(proxyUrl, {signal: AbortSignal.timeout(5000)});
     const outer = await r.json();
     const d = JSON.parse(outer.contents);
     const m = d?.chart?.result?.[0]?.meta;
@@ -912,35 +909,20 @@ async function fetchOne(tk,cy){
       prices[tk] = { price: m.regularMarketPrice, prev: m.chartPreviousClose || m.previousClose, cy };
     }
   } catch(e) {}
-
-  // Try auto-dividends via same proxy
-  try {
-    const now = Math.floor(Date.now()/1000);
-    const dUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?events=dividends&interval=1mo&period1=${now-63072000}&period2=${now}`;
-    const pr2 = `https://api.allorigins.win/get?url=${encodeURIComponent(dUrl)}`;
-    const r2 = await fetch(pr2, {signal: AbortSignal.timeout(8000)});
-    const o2 = await r2.json();
-    const d2 = JSON.parse(o2.contents);
-    const ev = d2?.chart?.result?.[0]?.events?.dividends;
-    if(ev) autoDivs[tk] = Object.values(ev).reduce((s,x) => s+(x.amount||0), 0);
-  } catch(e) {}
 }
 
 async function refreshAll(){
   const ic = document.getElementById('refIcon');
   ic.classList.add('spin');
-  document.getElementById('utxt').textContent = 'Refreshing prices…';
+  document.getElementById('utxt').textContent = 'Refreshing…';
   const tks = new Set();
   positions.forEach(p => tks.add(p.tk+'|'+p.cy));
   watchlist.forEach(w => tks.add(w.tk+'|'+w.cy));
-  const arr = [...tks];
-  for(let i=0; i<arr.length; i+=4){
-    const batch = arr.slice(i,i+4);
-    await Promise.all(batch.map(k=>{ const[t,c]=k.split('|'); return fetchOne(t,c); }));
-  }
+  // All parallel — fastest possible
+  await Promise.all([...tks].map(k=>{ const[t,c]=k.split('|'); return fetchOne(t,c); }));
   ic.classList.remove('spin');
-  document.getElementById('utxt').textContent = 'Prices updated '+new Date().toLocaleTimeString();
-  renderAll(); // re-render with new prices but do NOT call saveStore()
+  document.getElementById('utxt').textContent = 'Updated '+new Date().toLocaleTimeString();
+  renderAll();
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
