@@ -848,7 +848,7 @@ const SEED_PRICES = {
   'HXT':     {price:47.50,  prev:47.20, cy:'CAD'},
   'VIU':     {price:39.80,  prev:39.60, cy:'CAD'},
   'HXS':     {price:106.50, prev:105.80,cy:'CAD'},
-  'VOO':     {price:503.20, prev:499.80, cy:'USD'},
+  'VOO':     {price:653.77, prev:648.20, cy:'USD'},  // updated April 21 2026
   'ATL789':  {price:19.44,  prev:19.44, cy:'CAD'},
 };
 let prices = {...SEED_PRICES};
@@ -911,19 +911,41 @@ async function fetchFinnhub(tk, sym){
   return false;
 }
 
-// Your Netlify proxy URL — set this after deploying to Netlify
 const PROXY_URL = 'https://transcendent-chebakia-e7032c.netlify.app/.netlify/functions/prices';
 
 async function fetchCanadian(tk, sym){
+  return fetchViaProxy(tk, sym);
+}
+
+async function fetchFinnhub(tk, sym){
+  // Try Finnhub first for US stocks
+  try {
+    const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${FINNHUB_KEY}`, {
+      method: 'GET',
+      mode: 'cors',
+      signal: AbortSignal.timeout(6000)
+    });
+    if(r.status === 403) return fetchViaProxy(tk, sym);
+    const d = await r.json();
+    if(d?.c > 0) {
+      prices[tk] = { price: d.c, prev: d.pc || d.c, cy: prices[tk]?.cy || 'USD' };
+      return true;
+    }
+  } catch(e) {}
+  // Fallback to proxy
+  return fetchViaProxy(tk, sym);
+}
+
+async function fetchViaProxy(tk, sym){
   if(PROXY_URL === 'YOUR_NETLIFY_URL') return false;
   try {
     const r = await fetch(`${PROXY_URL}?symbols=${encodeURIComponent(sym)}`, {
-      signal: AbortSignal.timeout(8000)
+      signal: AbortSignal.timeout(10000)
     });
     const d = await r.json();
     const q = d?.[sym];
     if(q?.price > 0){
-      prices[tk] = { price: q.price, prev: q.prev || q.price, cy: 'CAD' };
+      prices[tk] = { price: q.price, prev: q.prev || q.price, cy: prices[tk]?.cy || 'CAD' };
       return true;
     }
   } catch(e) {}
@@ -1022,9 +1044,11 @@ function renderKPI(){
   trades.forEach(t=>{ totalRealPL += DV(t.realPL||0, t.cy); });
   const nav=mkt-paid, total=nav+divs, pct=paid?total/paid*100:0;
   const dc=displayCcy;
+  // Show full dollar value for portfolio, not rounded to K
+  const fmtFull = v => v==null||isNaN(v)?'—':(v<0?'-':'')+'$'+N(Math.abs(v),0)+' '+dc;
   document.getElementById('kpiStrip').innerHTML=`
-    <div class="kpi"><div class="kbar n"></div><div class="klbl">Portfolio value</div><div class="kval">${fmtK(mkt,dc)}</div><div class="ksub">All accounts · ${dc}</div></div>
-    <div class="kpi"><div class="kbar n"></div><div class="klbl">Total paid in</div><div class="kval">${fmtK(paid,dc)}</div><div class="ksub">Across all positions</div></div>
+    <div class="kpi"><div class="kbar n"></div><div class="klbl">Portfolio value</div><div class="kval">${fmtFull(mkt)}</div><div class="ksub">All accounts · ${dc}</div></div>
+    <div class="kpi"><div class="kbar n"></div><div class="klbl">Total paid in</div><div class="kval">${fmtFull(paid)}</div><div class="ksub">Across all positions</div></div>
     <div class="kpi"><div class="kbar ${C(nav)}"></div><div class="klbl">NAV gain/loss</div><div class="kval ${C(nav)}">${fmtK(nav,dc)}</div><div class="ksub">${Pct(paid?nav/paid*100:0)}</div></div>
     <div class="kpi"><div class="kbar g"></div><div class="klbl">Dividends received</div><div class="kval gold">${fmtK(divs,dc)}</div><div class="ksub">Auto + manual</div></div>
     <div class="kpi"><div class="kbar ${C(total)}"></div><div class="klbl">True total return</div><div class="kval ${C(total)}">${fmtK(total,dc)}</div><div class="ksub">${Pct(pct)}</div></div>
