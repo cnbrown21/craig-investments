@@ -921,7 +921,8 @@ const SEED_PRICES = {
 let prices = {...SEED_PRICES};
 let autoDivs={};
 let editId=null, distId=null, notesId=null, nextId=400;
-let displayCcy=localStorage.getItem('craig_ccy')||'CAD';
+let displayCcy = 'CAD'; // Always default to CAD — change via toggle if needed
+localStorage.setItem('craig_ccy','CAD'); // ensure saved as CAD on all devices
 let USD=parseFloat(localStorage.getItem('craig_fx'))||1.39;
 let isDark=localStorage.getItem('craig_dark')==='1';
 const sumCache={};
