@@ -302,7 +302,8 @@ html.dark .alertbanner{border-color:rgba(240,112,112,.2);}
 .pc-act:active{background:var(--line);}
 .pc-act.d{border-color:var(--gold);color:var(--gold);}
 .pc-act.info{border-color:var(--blue);color:var(--blue);}
-.pc-act.del{border-color:var(--dn);color:var(--dn);}
+.ra.b{border-color:var(--up);color:var(--up);}
+.pc-act.b{border-color:var(--up);color:var(--up);}
 .pc-flags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
 
 /* ── BOTTOM NAV ── */
@@ -701,6 +702,28 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   <div class="mtitle"><span id="notesTitle">Notes</span><button class="mclose" onclick="CO('notesOvl')">×</button></div>
   <div class="fg full"><label>Notes / thesis / reminders</label><textarea id="notesTA" placeholder="Why you own it, stop-loss, thesis…" style="min-height:120px;"></textarea></div>
   <div class="macts"><button class="bsec" onclick="CO('notesOvl')">Cancel</button><button class="bpri" onclick="saveNotes()">Save notes</button></div>
+</div></div>
+
+<!-- ── BUY MORE MODAL ── -->
+<div class="ovl" id="buyOvl"><div class="modal">
+  <div class="mtitle"><span id="buyTitle">Buy more shares</span><button class="mclose" onclick="CO('buyOvl')">×</button></div>
+  <div id="buyCurrentInfo" style="background:var(--paper);border-radius:6px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--ink2);"></div>
+  <div class="fgrid">
+    <div class="fg"><label>Shares purchased</label><input type="number" id="buy-qty" placeholder="0" step="any" oninput="calcNewAvg()"></div>
+    <div class="fg"><label>Price paid per share</label><input type="number" id="buy-price" placeholder="0.00" step="any" oninput="calcNewAvg()"></div>
+  </div>
+  <div id="buyCalcResult" style="background:var(--up-bg);border:1px solid var(--up);border-radius:6px;padding:12px;margin:12px 0;display:none;">
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;">New position after purchase</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div><div style="font-size:10px;color:var(--ink3);">Total shares</div><div id="buyNewQty" style="font-family:var(--mono);font-size:14px;font-weight:600;"></div></div>
+      <div><div style="font-size:10px;color:var(--ink3);">New avg price</div><div id="buyNewAvg" style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--up)"></div></div>
+      <div><div style="font-size:10px;color:var(--ink3);">Total cost</div><div id="buyNewCost" style="font-family:var(--mono);font-size:14px;font-weight:600;"></div></div>
+    </div>
+  </div>
+  <div class="macts">
+    <button class="bsec" onclick="CO('buyOvl')">Cancel</button>
+    <button class="bpri" onclick="saveBuyMore()">Update position</button>
+  </div>
 </div></div>
 
 <!-- ── TRADE MODAL ── -->
@@ -1203,6 +1226,7 @@ function renderHoldings(){
       <td class="r">${trCol}</td>
       <td class="r num"><span class="${C(s.totalPct)}">${Pct(s.totalPct)}</span></td>
       <td><div class="racts">
+        <button class="ra b" onclick="openBuyMore(${p.id})">+ Buy</button>
         <button class="ra d" onclick="openDist(${p.id})">Divs</button>
         <button class="ra n" onclick="openNotes(${p.id})">Note</button>
         <button class="ra s" onclick="openSum(${p.id})">Info</button>
@@ -1489,6 +1513,7 @@ function renderMobileCards(){
         <div class="pc-tr-val ${C(s.totalRet)}">${s.totalRet!=null?DM(s.totalRet,p.cy):'—'}</div>
       </div>
       <div class="pc-acts">
+        <button class="pc-act b" onclick="openBuyMore(${p.id})">+ Buy</button>
         <button class="pc-act d" onclick="openDist(${p.id})">$ Divs</button>
         <button class="pc-act info" onclick="openSum(${p.id})">Info</button>
         <button class="pc-act" onclick="openNotes(${p.id})">Note</button>
@@ -1572,7 +1597,61 @@ function renderIncomeSummaryBar(){
   `;
 }
 
-// ── BTC TRIM CALCULATOR ───────────────────────────────────────────────────────
+// ── BUY MORE ─────────────────────────────────────────────────────────────────
+let buyId = null;
+
+function openBuyMore(id){
+  const p = positions.find(x=>x.id===id);
+  if(!p) return;
+  buyId = id;
+  document.getElementById('buyTitle').textContent = `Buy more ${p.tk}`;
+  document.getElementById('buyCurrentInfo').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div><div style="font-size:10px;color:var(--ink3);">Current shares</div><div style="font-family:var(--mono);font-weight:600;">${N(p.qty, p.qty<10?4:2)}</div></div>
+      <div><div style="font-size:10px;color:var(--ink3);">Current avg price</div><div style="font-family:var(--mono);font-weight:600;">$${N(p.cost)} ${p.cy}</div></div>
+      <div><div style="font-size:10px;color:var(--ink3);">Total paid in</div><div style="font-family:var(--mono);font-weight:600;">${DM(p.qty*p.cost, p.cy, true)}</div></div>
+    </div>`;
+  document.getElementById('buy-qty').value = '';
+  document.getElementById('buy-price').value = '';
+  document.getElementById('buyCalcResult').style.display = 'none';
+  OV('buyOvl');
+}
+
+function calcNewAvg(){
+  const p = positions.find(x=>x.id===buyId);
+  if(!p) return;
+  const newQty = parseFloat(document.getElementById('buy-qty').value)||0;
+  const newPrice = parseFloat(document.getElementById('buy-price').value)||0;
+  if(!newQty || !newPrice) { document.getElementById('buyCalcResult').style.display='none'; return; }
+
+  const totalQty = p.qty + newQty;
+  const totalCost = (p.qty * p.cost) + (newQty * newPrice);
+  const newAvg = totalCost / totalQty;
+
+  document.getElementById('buyNewQty').textContent = N(totalQty, totalQty<10?4:2) + ' shares';
+  document.getElementById('buyNewAvg').textContent = '$' + N(newAvg) + ' ' + p.cy;
+  document.getElementById('buyNewCost').textContent = DM(totalCost, p.cy, true);
+  document.getElementById('buyCalcResult').style.display = 'block';
+}
+
+function saveBuyMore(){
+  const p = positions.find(x=>x.id===buyId);
+  if(!p) return;
+  const newQty = parseFloat(document.getElementById('buy-qty').value)||0;
+  const newPrice = parseFloat(document.getElementById('buy-price').value)||0;
+  if(!newQty || !newPrice) { toast('Enter shares and price'); return; }
+
+  const totalQty = p.qty + newQty;
+  const newAvg = ((p.qty * p.cost) + (newQty * newPrice)) / totalQty;
+
+  p.qty = totalQty;
+  p.cost = Math.round(newAvg * 10000) / 10000;
+
+  saveStore();
+  renderAll();
+  CO('buyOvl');
+  toast(`✓ ${p.tk} updated — ${N(totalQty, totalQty<10?4:2)} shares @ $${N(newAvg)} avg`);
+}
 function renderBTCTrimCalc(){
   const el = document.getElementById('btcTrimCalc'); if(!el) return;
   const btcPos = positions.find(p=>p.tk==='BTC-CAD');
