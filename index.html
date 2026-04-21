@@ -1601,10 +1601,10 @@ function renderIncomeSummaryBar(){
 let buyId = null;
 
 function openBuyMore(id){
-  const p = positions.find(x=>x.id===id);
-  if(!p) return;
-  buyId = id;
-  document.getElementById('buyTitle').textContent = `Buy more ${p.tk}`;
+  const p = positions.find(x=>x.id===id) || positions.find(x=>x.id===Number(id));
+  if(!p){ toast('Position not found — try refreshing'); return; }
+  buyId = p.id;
+  document.getElementById('buyTitle').textContent = `Buy more ${p.tk} (${p.ac})`;
   document.getElementById('buyCurrentInfo').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
       <div><div style="font-size:10px;color:var(--ink3);">Current shares</div><div style="font-family:var(--mono);font-weight:600;">${N(p.qty, p.qty<10?4:2)}</div></div>
@@ -1614,7 +1614,7 @@ function openBuyMore(id){
   document.getElementById('buy-qty').value = '';
   document.getElementById('buy-price').value = '';
   document.getElementById('buyCalcResult').style.display = 'none';
-  OV('buyOvl');
+  document.getElementById('buyOvl').classList.add('on');
 }
 
 function calcNewAvg(){
@@ -1635,8 +1635,8 @@ function calcNewAvg(){
 }
 
 function saveBuyMore(){
-  const p = positions.find(x=>x.id===buyId);
-  if(!p) return;
+  const p = positions.find(x=>x.id===buyId) || positions.find(x=>x.id===Number(buyId));
+  if(!p) { toast('Position not found'); return; }
   const newQty = parseFloat(document.getElementById('buy-qty').value)||0;
   const newPrice = parseFloat(document.getElementById('buy-price').value)||0;
   if(!newQty || !newPrice) { toast('Enter shares and price'); return; }
