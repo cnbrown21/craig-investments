@@ -670,6 +670,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div class="fg full"><label>Ticker symbol</label><input id="f-tk" placeholder="e.g. VFV or MSTY" style="text-transform:uppercase"></div>
     <div class="fg full"><label>Name</label><input id="f-nm" placeholder="e.g. Vanguard S&P 500 ETF"></div>
     <div class="fg"><label>Account</label><select id="f-ac"><option>RRSP</option><option>TFSA</option><option>Corp</option><option>Crypto</option></select></div>
+    <div class="fg"><label>Owner</label><select id="f-owner"><option value="Craig">Craig</option><option value="Kit">Kit</option></select></div>
     <div class="fg"><label>Currency</label><select id="f-cy"><option value="CAD">CAD</option><option value="USD">USD</option></select></div>
     <div class="fg"><label>Quantity / shares</label><input type="number" id="f-qty" placeholder="0" step="any"></div>
     <div class="fg"><label>Avg price paid</label><input type="number" id="f-cost" placeholder="0.00" step="any"></div>
@@ -1834,6 +1835,7 @@ function openAdd(){
   document.getElementById('f-ac').value='RRSP';
   document.getElementById('f-cy').value='CAD';
   document.getElementById('f-src').value='auto';
+  document.getElementById('f-owner').value = ownerFilter === 'Kit' ? 'Kit' : 'Craig';
   document.getElementById('posOvl').classList.add('on');
 }
 function openEdit(id){
@@ -1844,6 +1846,7 @@ function openEdit(id){
   document.getElementById('f-nm').value=p.nm;
   document.getElementById('f-ac').value=p.ac;
   document.getElementById('f-cy').value=p.cy;
+  document.getElementById('f-owner').value=p.owner||'Craig';
   document.getElementById('f-qty').value=p.qty;
   document.getElementById('f-cost').value=p.cost;
   document.getElementById('f-yld').value=p.yld||'';
@@ -1858,6 +1861,7 @@ function savePos(){
   const nm=document.getElementById('f-nm').value.trim();
   const ac=document.getElementById('f-ac').value;
   const cy=document.getElementById('f-cy').value;
+  const owner=document.getElementById('f-owner').value;
   const qty=parseFloat(document.getElementById('f-qty').value);
   const cost=parseFloat(document.getElementById('f-cost').value);
   const yld=parseFloat(document.getElementById('f-yld').value)||0;
@@ -1866,8 +1870,8 @@ function savePos(){
   const target=parseFloat(document.getElementById('f-target').value)||null;
   const notes=document.getElementById('f-notes').value.trim();
   if(!tk||isNaN(qty)||isNaN(cost)){toast('Fill in ticker, quantity, and price paid');return;}
-  if(editId){Object.assign(positions.find(x=>x.id===editId),{tk,nm,ac,cy,qty,cost,yld,src,alert,target,notes});toast('Updated');}
-  else{positions.push({id:++nextId,tk,nm,ac,cy,qty,cost,yld,src,alert,target,notes,dists:[]});fetchOne(tk,cy).then(()=>renderAll());toast('Position added');}
+  if(editId){Object.assign(positions.find(x=>x.id===editId),{tk,nm,ac,cy,owner,qty,cost,yld,src,alert,target,notes});toast('Updated');}
+  else{positions.push({id:++nextId,tk,nm,ac,cy,owner,qty,cost,yld,src,alert,target,notes,dists:[]});fetchOne(tk,cy).then(()=>renderAll());toast('Position added');}
   CO('posOvl');saveStore();renderAll();
 }
 function delPos(id){if(!confirm('Remove this position?'))return;positions=positions.filter(p=>p.id!==id);saveStore();renderAll();toast('Removed');}
@@ -2230,3 +2234,4 @@ init();
 </script>
 </body>
 </html>
+
