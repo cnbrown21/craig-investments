@@ -912,25 +912,39 @@ async function fetchFinnhub(tk, sym){
 }
 
 async function fetchCanadian(tk, sym){
-  // Yahoo Finance spark endpoint — works for Canadian .TO stocks with relaxed CORS
-  const encodedSym = encodeURIComponent(sym);
-  const urls = [
-    `https://query1.finance.yahoo.com/v8/finance/spark?symbols=${encodedSym}&range=1d&interval=1d`,
-    `https://query2.finance.yahoo.com/v8/finance/spark?symbols=${encodedSym}&range=1d&interval=1d`,
-  ];
-  for(const url of urls){
-    try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(6000), mode: 'cors' });
-      if(!r.ok) continue;
-      const d = await r.json();
-      const result = d?.spark?.result?.[0];
-      const meta = result?.response?.[0]?.meta;
-      if(meta?.regularMarketPrice > 0){
-        prices[tk] = { price: meta.regularMarketPrice, prev: meta.chartPreviousClose || meta.regularMarketPrice, cy: 'CAD' };
-        return true;
-      }
-    } catch(e) {}
-  }
+  // Strip .TO suffix for TMX
+  const base = sym.replace('.TO','');
+  
+  // Try TMX Money (TSX's own data)
+  try {
+    const r = await fetch(`https://app-money.tmx.com/graphql`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify({query:`{getQuoteBySymbol(symbol:"${base}",locale:"en"){price,prevClose}}`}),
+      signal: AbortSignal.timeout(6000)
+    });
+    const d = await r.json();
+    const q = d?.data?.getQuoteBySymbol;
+    if(q?.price > 0){
+      prices[tk] = { price: parseFloat(q.price), prev: parseFloat(q.prevClose)||parseFloat(q.price), cy:'CAD' };
+      return true;
+    }
+  } catch(e) {}
+
+  // Try Alpha Vantage free tier as fallback (no CORS issues, 25 req/day free)
+  try {
+    const r = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(sym)}&apikey=demo`, {
+      signal: AbortSignal.timeout(6000)
+    });
+    const d = await r.json();
+    const q = d?.['Global Quote'];
+    if(q?.['05. price'] > 0){
+      prices[tk] = { price: parseFloat(q['05. price']), prev: parseFloat(q['08. previous close'])||parseFloat(q['05. price']), cy:'CAD' };
+      return true;
+    }
+  } catch(e) {}
+
   return false;
 }
 
