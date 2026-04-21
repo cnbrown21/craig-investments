@@ -476,8 +476,23 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 <div class="view on" id="view-holdings">
   <div id="alertBanner"></div>
   <div class="kstrip" id="kpiStrip" style="grid-template-columns:repeat(6,1fr)"></div>
+  <!-- Income + rebalancing summary bar -->
+  <div id="incomeSummaryBar" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;"></div>
+  <!-- Household breakdown bar -->
+  <div id="householdBar" style="background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:14px 18px;margin-bottom:12px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <span style="font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;">Household</span>
+    <div id="householdBars" style="flex:1;min-width:200px;height:8px;border-radius:4px;overflow:hidden;display:flex;"></div>
+    <div id="householdLegend" style="display:flex;gap:12px;font-size:11px;font-family:var(--mono);"></div>
+  </div>
   <div class="shead">
-    <span class="stitle">All positions</span>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span class="stitle">All positions</span>
+      <div class="pill" id="ownerPill">
+        <button class="on" onclick="setOwner('All',this)">Household</button>
+        <button onclick="setOwner('Craig',this)">Craig</button>
+        <button onclick="setOwner('Kit',this)">Kit</button>
+      </div>
+    </div>
     <div class="sacts">
       <div class="view-toggle" id="holdToggle">
         <button class="on" onclick="setHoldView('table',this)">Table</button>
@@ -491,7 +506,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   <!-- Desktop table -->
   <div class="tcard tbl-desktop" id="holdTable"><div class="tscroll"><table>
     <thead><tr>
-      <th>Ticker</th><th>Account</th><th>Category</th><th class="r">Qty</th>
+      <th>Ticker</th><th>Account</th><th>Owner</th><th>Category</th><th class="r">Qty</th>
       <th class="r">Yield %</th><th class="r">Avg price</th><th class="r">Live price</th><th class="r">Mkt value</th>
       <th class="r">Total paid in</th><th class="r">NAV gain/loss</th>
       <th class="r">Dividends</th><th class="r">Total return</th>
@@ -575,35 +590,64 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 
 <!-- ── CHARTS ── -->
 <div class="view" id="view-charts">
+  <!-- YTD toggle on return chart -->
   <div class="chart-grid">
     <div class="chart-card">
       <div class="chart-title">Portfolio value over time</div>
-      <div class="chart-wrap" style="height:240px;"><canvas id="chartPerfLine" role="img" aria-label="Line chart of portfolio value over time"></canvas></div>
+      <div class="chart-wrap" style="height:240px;"><canvas id="chartPerfLine"></canvas></div>
       <div style="font-size:11px;color:var(--ink3);margin-top:10px;">Add snapshots on the Performance tab to populate this chart.</div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">Total return breakdown</div>
-      <div class="chart-wrap" style="height:240px;"><canvas id="chartReturnBar" role="img" aria-label="Stacked bar chart of NAV gain vs dividends per position"></canvas></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="chart-title" style="margin-bottom:0">Total return breakdown</div>
+        <div class="pill" id="returnToggle" style="transform:scale(.85);transform-origin:right center;">
+          <button class="on" onclick="setReturnView('lifetime',this)">Lifetime</button>
+          <button onclick="setReturnView('ytd',this)">YTD 2026</button>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:240px;"><canvas id="chartReturnBar"></canvas></div>
       <div class="chart-legend" id="returnBarLegend"></div>
     </div>
   </div>
   <div class="chart-grid">
     <div class="chart-card">
       <div class="chart-title">Allocation by category</div>
-      <div class="chart-wrap" style="height:220px;"><canvas id="chartAllocCat" role="img" aria-label="Donut chart of allocation by category"></canvas></div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="chartAllocCat"></canvas></div>
       <div class="chart-legend" id="allocCatLegend"></div>
     </div>
     <div class="chart-card">
       <div class="chart-title">Allocation by account</div>
-      <div class="chart-wrap" style="height:220px;"><canvas id="chartAllocAcct" role="img" aria-label="Donut chart of allocation by account"></canvas></div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="chartAllocAcct"></canvas></div>
       <div class="chart-legend" id="allocAcctLegend"></div>
     </div>
   </div>
-  <div class="chart-grid full">
+  <div class="chart-grid">
+    <div class="chart-card">
+      <div class="chart-title">Household split — Craig vs Kit</div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="chartOwnerSplit"></canvas></div>
+      <div class="chart-legend" id="ownerSplitLegend"></div>
+    </div>
     <div class="chart-card">
       <div class="chart-title">Monthly income estimate by position</div>
-      <div class="chart-wrap" style="height:240px;"><canvas id="chartMonthlyInc" role="img" aria-label="Bar chart of estimated monthly income by position"></canvas></div>
+      <div class="chart-wrap" style="height:220px;"><canvas id="chartMonthlyInc"></canvas></div>
     </div>
+  </div>
+  <!-- Distribution calendar -->
+  <div class="chart-card" style="margin-bottom:16px;">
+    <div class="chart-title">Expected monthly distributions — full year</div>
+    <div class="chart-wrap" style="height:240px;"><canvas id="chartDistCalendar"></canvas></div>
+    <div style="font-size:11px;color:var(--ink3);margin-top:8px;">Based on current NAV × yield ÷ 12. Assumes monthly payers. Update yield % per position to improve accuracy.</div>
+  </div>
+  <!-- BTC trim calculator -->
+  <div class="chart-card" style="margin-bottom:16px;">
+    <div class="chart-title">₿ BTC trim calculator — Soloway framework</div>
+    <div id="btcTrimCalc" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:8px;"></div>
+    <div style="font-size:11px;color:var(--ink3);margin-top:10px;">Graduated trim targets based on your 0.3428 BTC position. Net after estimated 25% capital gains tax (BC non-registered).</div>
+  </div>
+  <!-- Rebalancing panel -->
+  <div class="chart-card" style="margin-bottom:16px;">
+    <div class="chart-title">Rebalancing alerts — category drift</div>
+    <div id="rebalancePanel" style="margin-top:8px;"></div>
   </div>
 </div>
 
@@ -779,36 +823,47 @@ async function autoCreateBin() {
 // ── DEFAULT DATA ─────────────────────────────────────────────────────────────
 // Updated from CSV export — April 19, 2026
 const DEF=[
-  {id:1,  tk:'HHIS',    nm:'Harvest Diversified High Income Shares ETF', ac:'TFSA',   cy:'CAD', qty:5429,    cost:13.71,  yld:12,  src:'manual', alert:25, target:null,   notes:'High-income covered call ETF. Watch NAV erosion vs. distribution sustainability.', dists:[{date:'2026-04-19',amt:6238.83,note:'Total distributions to date'}]},
-  {id:2,  tk:'VTV',     nm:'Vanguard Value ETF',                          ac:'RRSP',   cy:'USD', qty:239.97,  cost:198.59, yld:2.3, src:'auto',   alert:15, target:null,   notes:'Core US large-cap value. Long hold.', dists:[{date:'2026-04-19',amt:13.86,note:'Total distributions to date'}]},
-  {id:3,  tk:'QQCL',   nm:'Global X Enhanced Nasdaq-100 Covered Call',   ac:'RRSP',   cy:'CAD', qty:1550,    cost:25.59,  yld:14,  src:'manual', alert:20, target:null,   notes:'', dists:[{date:'2026-04-19',amt:1012.00,note:'Total distributions to date'}]},
-  {id:4,  tk:'HDIV',   nm:'Hamilton Enhanced Multi-Sector Covered Call',  ac:'RRSP',   cy:'CAD', qty:1700,    cost:21.50,  yld:13,  src:'manual', alert:20, target:null,   notes:'', dists:[{date:'2026-04-19',amt:560.00,note:'Total distributions to date'}]},
-  {id:5,  tk:'BTC-CAD',nm:'Bitcoin',                                       ac:'Crypto', cy:'CAD', qty:0.3428,  cost:127396, yld:0,   src:'manual', alert:30, target:130000, notes:'Gareth Soloway framework — graduated trim on rally to $130K+.', dists:[]},
-  {id:6,  tk:'MSTY',   nm:'YieldMax MSTR Option Income Strategy ETF',     ac:'RRSP',   cy:'USD', qty:1300,    cost:119.94, yld:90,  src:'manual', alert:0,  target:35,     notes:'CRITICAL: NAV erodes by design — total return only matters. BTC rally = sell signal.', dists:[{date:'2026-04-19',amt:105698.57,note:'Total distributions to date'}]},
-  {id:7,  tk:'CLSA',   nm:'Brompton Split Corp Class A',                  ac:'RRSP',   cy:'CAD', qty:1500,    cost:14.35,  yld:10,  src:'manual', alert:20, target:null,   notes:'', dists:[{date:'2026-04-19',amt:522.00,note:'Total distributions to date'}]},
-  {id:8,  tk:'HHIS',   nm:'Harvest Diversified High Income Shares ETF',   ac:'RRSP',   cy:'CAD', qty:1633,    cost:12.97,  yld:12,  src:'manual', alert:25, target:null,   notes:'', dists:[{date:'2026-04-19',amt:1456.00,note:'Total distributions to date'}]},
-  {id:9,  tk:'MSTE',   nm:'Harvest Strategy Enhanced High Income ETF',    ac:'RRSP',   cy:'CAD', qty:3501,    cost:15.00,  yld:80,  src:'manual', alert:0,  target:5.50,   notes:'CRITICAL: NAV erosion expected — distributions are the return story.', dists:[{date:'2026-04-19',amt:16015.00,note:'Total distributions to date'}]},
-  {id:10, tk:'SCHD',   nm:'Schwab US Dividend Equity ETF',                 ac:'RRSP',   cy:'USD', qty:263.16,  cost:31.33,  yld:3.5, src:'auto',   alert:15, target:null,   notes:'Core US dividend growth.', dists:[]},
-  {id:11, tk:'XIC',    nm:'iShares Core S&P/TSX Capped Composite',         ac:'RRSP',   cy:'CAD', qty:133.33,  cost:54.19,  yld:2.5, src:'auto',   alert:15, target:null,   notes:'Canadian equity core.', dists:[]},
-  {id:12, tk:'VFV',    nm:'Vanguard S&P 500 Index ETF',                    ac:'TFSA',   cy:'CAD', qty:34.6752, cost:167.95, yld:1.3, src:'auto',   alert:15, target:null,   notes:'', dists:[]},
-  {id:13, tk:'MSTY',   nm:'YieldMax MSTR Option Income Strategy ETF',      ac:'TFSA',   cy:'USD', qty:238,     cost:134.09, yld:90,  src:'manual', alert:0,  target:35,     notes:'Log all distributions — same thesis as RRSP MSTY.', dists:[{date:'2026-04-19',amt:15124.46,note:'Total distributions to date'}]},
-  {id:14, tk:'CSU',    nm:'Constellation Software Inc',                    ac:'Corp',   cy:'CAD', qty:1,       cost:2398.89,yld:0.1, src:'auto',   alert:20, target:null,   notes:'High-quality compounder. Long hold.', dists:[]},
-  {id:15, tk:'BIGY',   nm:'Evolve US Equity UltraYield ETF',               ac:'RRSP',   cy:'CAD', qty:130,     cost:23.86,  yld:20,  src:'manual', alert:25, target:null,   notes:'', dists:[{date:'2026-04-19',amt:203.00,note:'Total distributions to date'}]},
-  {id:16, tk:'PLYY',   nm:'GraniteShares Yieldboost PLTR ETF',             ac:'TFSA',   cy:'USD', qty:176,     cost:23.28,  yld:40,  src:'manual', alert:0,  target:null,   notes:'Small position. Review for exit.', dists:[{date:'2026-04-19',amt:879.75,note:'Total distributions to date'}]},
-  {id:17, tk:'MSTR',   nm:'Strategy Inc (MicroStrategy)',                  ac:'RRSP',   cy:'USD', qty:11,      cost:164.51, yld:0,   src:'auto',   alert:20, target:null,   notes:'BTC proxy single stock. Small residual.', dists:[]},
-  {id:18, tk:'VFV',    nm:'Vanguard S&P 500 Index ETF',                    ac:'RRSP',   cy:'CAD', qty:9,       cost:160.23, yld:1.3, src:'auto',   alert:15, target:null,   notes:'', dists:[]},
-  {id:19, tk:'BMNR',   nm:'Bitmine Immersion Technologies Inc',            ac:'RRSP',   cy:'USD', qty:43,      cost:44.92,  yld:0,   src:'manual', alert:0,  target:null,   notes:'Small speculative. Review for exit.', dists:[]},
-  {id:20, tk:'SHOP',   nm:'Shopify Inc',                                   ac:'Corp',   cy:'CAD', qty:3.8052,  cost:158.00, yld:0,   src:'auto',   alert:20, target:null,   notes:'Quality compounder.', dists:[]},
-  {id:21, tk:'OXY',    nm:'Occidental Petroleum Corp',                     ac:'TFSA',   cy:'USD', qty:10,      cost:45.70,  yld:1.5, src:'auto',   alert:20, target:null,   notes:'Energy hedge. Buffett-held.', dists:[]},
-  // ── NEW POSITIONS FROM CSV ──
-  {id:22, tk:'ATL789', nm:'TD Investment',                                  ac:'RRSP',   cy:'CAD', qty:830,     cost:19.44,  yld:15,  src:'manual', alert:20, target:null,   notes:'', dists:[]},
-  {id:23, tk:'CSU',    nm:'Constellation Software Inc',                    ac:'Corp',   cy:'CAD', qty:6,       cost:2398.37,yld:0.1, src:'auto',   alert:20, target:null,   notes:'Additional CSU lot.', dists:[]},
-  {id:24, tk:'SHOP',   nm:'Shopify Inc',                                   ac:'Corp',   cy:'CAD', qty:30,      cost:155.92, yld:0,   src:'auto',   alert:20, target:null,   notes:'Additional SHOP lot.', dists:[]},
-  {id:25, tk:'HXT',    nm:'Horizons S&P/TSX 60 Index ETF',                 ac:'Corp',   cy:'CAD', qty:65,      cost:83.99,  yld:0,   src:'auto',   alert:15, target:null,   notes:'', dists:[]},
-  {id:26, tk:'VIU',    nm:'Vanguard FTSE Developed All Cap ex North America',ac:'Corp', cy:'CAD', qty:1333,    cost:46.62,  yld:3,   src:'auto',   alert:15, target:null,   notes:'', dists:[]},
-  {id:27, tk:'HXS',    nm:'Horizons S&P 500 Index ETF',                    ac:'Corp',   cy:'CAD', qty:72,      cost:90.90,  yld:0,   src:'auto',   alert:15, target:null,   notes:'', dists:[]},
-  {id:28, tk:'VOO',    nm:'Vanguard S&P 500 ETF',                          ac:'Corp',   cy:'CAD', qty:9,       cost:604.39, yld:1.3, src:'auto',   alert:15, target:null,   notes:'', dists:[]},
-  {id:29, tk:'MSTR',   nm:'Strategy Inc (MicroStrategy)',                  ac:'RRSP',   cy:'USD', qty:65,      cost:212.76, yld:0,   src:'auto',   alert:20, target:null,   notes:'Larger MSTR lot.', dists:[]},
+  // ── CRAIG'S POSITIONS ──
+  // HHIS yield: $0.27/unit/month × 12 = $3.24/yr ÷ ~$11.29 price = ~28.7% annual yield
+  {id:1,  tk:'HHIS',    nm:'Harvest Diversified High Income Shares ETF', ac:'TFSA',   cy:'CAD', qty:5429,    cost:13.71,  yld:28.7,src:'manual', alert:25, target:null,   owner:'Craig', notes:'$0.27/unit/month distribution. Watch NAV erosion.', dists:[{date:'2026-04-19',amt:6238.83,note:'Total distributions to date'}]},
+  {id:2,  tk:'VTV',     nm:'Vanguard Value ETF',                          ac:'RRSP',   cy:'USD', qty:239.97,  cost:198.59, yld:2.3, src:'auto',   alert:15, target:null,   owner:'Craig', notes:'Core US large-cap value. Long hold.', dists:[{date:'2026-04-19',amt:13.86,note:'Total distributions to date'}]},
+  {id:3,  tk:'QQCL',   nm:'Global X Enhanced Nasdaq-100 Covered Call',   ac:'RRSP',   cy:'CAD', qty:1550,    cost:25.59,  yld:14,  src:'manual', alert:20, target:null,   owner:'Craig', notes:'', dists:[{date:'2026-04-19',amt:1012.00,note:'Total distributions to date'}]},
+  {id:4,  tk:'HDIV',   nm:'Hamilton Enhanced Multi-Sector Covered Call',  ac:'RRSP',   cy:'CAD', qty:1700,    cost:21.50,  yld:13,  src:'manual', alert:20, target:null,   owner:'Craig', notes:'', dists:[{date:'2026-04-19',amt:560.00,note:'Total distributions to date'}]},
+  {id:5,  tk:'BTC-CAD',nm:'Bitcoin',                                       ac:'Crypto', cy:'CAD', qty:0.3428,  cost:127396, yld:0,   src:'manual', alert:30, target:130000, owner:'Craig', notes:'Gareth Soloway framework — graduated trim on rally to $130K+.', dists:[]},
+  {id:6,  tk:'MSTY',   nm:'YieldMax MSTR Option Income Strategy ETF',     ac:'RRSP',   cy:'USD', qty:1300,    cost:119.94, yld:90,  src:'manual', alert:0,  target:35,     owner:'Craig', notes:'CRITICAL: NAV erodes by design — total return only matters. BTC rally = sell signal.', dists:[{date:'2026-04-19',amt:105698.57,note:'Total distributions to date'}]},
+  {id:7,  tk:'CLSA',   nm:'Brompton Split Corp Class A',                  ac:'RRSP',   cy:'CAD', qty:1500,    cost:14.35,  yld:10,  src:'manual', alert:20, target:null,   owner:'Craig', notes:'', dists:[{date:'2026-04-19',amt:522.00,note:'Total distributions to date'}]},
+  {id:8,  tk:'HHIS',   nm:'Harvest Diversified High Income Shares ETF',   ac:'RRSP',   cy:'CAD', qty:1633,    cost:12.97,  yld:28.7,src:'manual', alert:25, target:null,   owner:'Craig', notes:'$0.27/unit/month', dists:[{date:'2026-04-19',amt:1456.00,note:'Total distributions to date'}]},
+  {id:9,  tk:'MSTE',   nm:'Harvest Strategy Enhanced High Income ETF',    ac:'RRSP',   cy:'CAD', qty:3501,    cost:15.00,  yld:80,  src:'manual', alert:0,  target:5.50,   owner:'Craig', notes:'CRITICAL: NAV erosion expected — distributions are the return story.', dists:[{date:'2026-04-19',amt:16015.00,note:'Total distributions to date'}]},
+  {id:10, tk:'SCHD',   nm:'Schwab US Dividend Equity ETF',                 ac:'RRSP',   cy:'USD', qty:263.16,  cost:31.33,  yld:3.5, src:'auto',   alert:15, target:null,   owner:'Craig', notes:'Core US dividend growth.', dists:[]},
+  {id:11, tk:'XIC',    nm:'iShares Core S&P/TSX Capped Composite',         ac:'RRSP',   cy:'CAD', qty:133.33,  cost:54.19,  yld:2.5, src:'auto',   alert:15, target:null,   owner:'Craig', notes:'Canadian equity core.', dists:[]},
+  {id:12, tk:'VFV',    nm:'Vanguard S&P 500 Index ETF',                    ac:'TFSA',   cy:'CAD', qty:34.6752, cost:167.95, yld:1.3, src:'auto',   alert:15, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:13, tk:'MSTY',   nm:'YieldMax MSTR Option Income Strategy ETF',      ac:'TFSA',   cy:'USD', qty:238,     cost:134.09, yld:90,  src:'manual', alert:0,  target:35,     owner:'Craig', notes:'Log all distributions — same thesis as RRSP MSTY.', dists:[{date:'2026-04-19',amt:15124.46,note:'Total distributions to date'}]},
+  {id:14, tk:'CSU',    nm:'Constellation Software Inc',                    ac:'Corp',   cy:'CAD', qty:1,       cost:2398.89,yld:0.1, src:'auto',   alert:20, target:null,   owner:'Craig', notes:'High-quality compounder. Long hold.', dists:[]},
+  {id:15, tk:'BIGY',   nm:'Evolve US Equity UltraYield ETF',               ac:'RRSP',   cy:'CAD', qty:130,     cost:23.86,  yld:20,  src:'manual', alert:25, target:null,   owner:'Craig', notes:'', dists:[{date:'2026-04-19',amt:203.00,note:'Total distributions to date'}]},
+  {id:16, tk:'PLYY',   nm:'GraniteShares Yieldboost PLTR ETF',             ac:'TFSA',   cy:'USD', qty:176,     cost:23.28,  yld:40,  src:'manual', alert:0,  target:null,   owner:'Craig', notes:'Small position. Review for exit.', dists:[{date:'2026-04-19',amt:879.75,note:'Total distributions to date'}]},
+  {id:17, tk:'MSTR',   nm:'Strategy Inc (MicroStrategy)',                  ac:'RRSP',   cy:'USD', qty:11,      cost:164.51, yld:0,   src:'auto',   alert:20, target:null,   owner:'Craig', notes:'BTC proxy single stock. Small residual.', dists:[]},
+  {id:18, tk:'VFV',    nm:'Vanguard S&P 500 Index ETF',                    ac:'RRSP',   cy:'CAD', qty:9,       cost:160.23, yld:1.3, src:'auto',   alert:15, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:19, tk:'BMNR',   nm:'Bitmine Immersion Technologies Inc',            ac:'RRSP',   cy:'USD', qty:43,      cost:44.92,  yld:0,   src:'manual', alert:0,  target:null,   owner:'Craig', notes:'Small speculative. Review for exit.', dists:[]},
+  {id:20, tk:'SHOP',   nm:'Shopify Inc',                                   ac:'Corp',   cy:'CAD', qty:3.8052,  cost:158.00, yld:0,   src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Quality compounder.', dists:[]},
+  {id:21, tk:'OXY',    nm:'Occidental Petroleum Corp',                     ac:'TFSA',   cy:'USD', qty:10,      cost:45.70,  yld:1.5, src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Energy hedge. Buffett-held.', dists:[]},
+  {id:22, tk:'ATL789', nm:'TD Investment',                                  ac:'RRSP',   cy:'CAD', qty:830,     cost:19.44,  yld:15,  src:'manual', alert:20, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:23, tk:'CSU',    nm:'Constellation Software Inc',                    ac:'Corp',   cy:'CAD', qty:6,       cost:2398.37,yld:0.1, src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Additional CSU lot.', dists:[]},
+  {id:24, tk:'SHOP',   nm:'Shopify Inc',                                   ac:'Corp',   cy:'CAD', qty:30,      cost:155.92, yld:0,   src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Additional SHOP lot.', dists:[]},
+  {id:25, tk:'HXT',    nm:'Horizons S&P/TSX 60 Index ETF',                 ac:'Corp',   cy:'CAD', qty:65,      cost:83.99,  yld:0,   src:'auto',   alert:15, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:26, tk:'VIU',    nm:'Vanguard FTSE Developed All Cap ex North America',ac:'Corp', cy:'CAD', qty:1333,    cost:46.62,  yld:3,   src:'auto',   alert:15, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:27, tk:'HXS',    nm:'Horizons S&P 500 Index ETF',                    ac:'Corp',   cy:'CAD', qty:72,      cost:90.90,  yld:0,   src:'auto',   alert:15, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:28, tk:'VOO',    nm:'Vanguard S&P 500 ETF',                          ac:'Corp',   cy:'CAD', qty:9,       cost:604.39, yld:1.3, src:'auto',   alert:15, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:29, tk:'MSTR',   nm:'Strategy Inc (MicroStrategy)',                  ac:'RRSP',   cy:'USD', qty:65,      cost:212.76, yld:0,   src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Larger MSTR lot.', dists:[]},
+  // ── KIT'S POSITIONS ──
+  {id:30, tk:'HHIS',   nm:'Harvest Diversified High Income Shares ETF',   ac:'TFSA',   cy:'CAD', qty:5551,    cost:13.71,  yld:28.7,src:'manual', alert:25, target:null,   owner:'Kit',   notes:'Kit TFSA', dists:[]},
+  {id:31, tk:'MSTE',   nm:'Harvest Strategy Enhanced High Income ETF',    ac:'TFSA',   cy:'CAD', qty:2841,    cost:15.50,  yld:80,  src:'manual', alert:0,  target:5.50,   owner:'Kit',   notes:'Kit TFSA', dists:[]},
+  {id:32, tk:'MSTR',   nm:'Strategy Inc (MicroStrategy)',                  ac:'RRSP',   cy:'USD', qty:0.83684, cost:355.62, yld:0,   src:'auto',   alert:20, target:null,   owner:'Kit',   notes:'Kit USD RRSP', dists:[]},
+  {id:33, tk:'BMNR',   nm:'Bitmine Immersion Technologies Inc',            ac:'TFSA',   cy:'USD', qty:20,      cost:50.79,  yld:0,   src:'manual', alert:0,  target:null,   owner:'Kit',   notes:'Kit TFSA', dists:[]},
+  {id:34, tk:'KHC',    nm:'Kraft Heinz Company',                           ac:'TFSA',   cy:'USD', qty:5,       cost:23.56,  yld:5.5, src:'auto',   alert:20, target:null,   owner:'Kit',   notes:'Kit TFSA', dists:[]},
+  {id:35, tk:'MSTY',   nm:'YieldMax MSTR Option Income Strategy ETF',      ac:'TFSA',   cy:'USD', qty:165,     cost:129.83, yld:90,  src:'manual', alert:0,  target:35,     owner:'Kit',   notes:'Kit TFSA — log distributions', dists:[]},
+  {id:36, tk:'SCHD',   nm:'Schwab US Dividend Equity ETF',                 ac:'TFSA',   cy:'USD', qty:4,       cost:30.71,  yld:3.5, src:'auto',   alert:15, target:null,   owner:'Kit',   notes:'Kit TFSA', dists:[]},
+  {id:37, tk:'VTV',    nm:'Vanguard Value ETF',                            ac:'RRSP',   cy:'USD', qty:43,      cost:195.97, yld:2.3, src:'auto',   alert:15, target:null,   owner:'Kit',   notes:'Kit USD RRSP', dists:[]},
+  {id:38, tk:'TDMIF',  nm:'TD Monthly Income Fund',                        ac:'RRSP',   cy:'CAD', qty:1341.96, cost:24.1564,yld:4.5, src:'manual', alert:0,  target:null,   owner:'Kit',   notes:'Kit TD Mutual Fund — price per unit $30.62 as of Apr 21 2026', dists:[]},
 ];
 const DEF_WL=[
   {id:101,tk:'MSTY',    nm:'YieldMax MSTR — BTC rally thesis', cy:'USD', target:35,     note:'Sell target on BTC rally'},
@@ -816,10 +871,20 @@ const DEF_WL=[
   {id:103,tk:'BTC-CAD', nm:'Bitcoin CAD',                      cy:'CAD', target:130000, note:'Gareth Soloway framework'},
   {id:104,tk:'VOO',     nm:'Vanguard S&P 500 ETF',             cy:'USD', target:480,    note:'RRSP redeployment candidate'},
 ];
-const DEF_TARGETS={yield:60,index:20,crypto:10,single:10};
+const DEF_TARGETS={yield:55,index:20,growth:10,income:5,crypto:10};
 
 const stored=loadStore();
-let positions  = stored?.positions  || DEF;
+
+// Merge DEF into stored positions — ensures new positions (like Kit's) always appear
+// even if user has older stored data from before they were added
+function mergePositions(stored, def) {
+  if(!stored || !stored.length) return def;
+  const storedIds = new Set(stored.map(p => p.id));
+  const newOnes = def.filter(p => !storedIds.has(p.id));
+  return [...stored, ...newOnes];
+}
+
+let positions  = mergePositions(stored?.positions, DEF);
 let watchlist  = stored?.watchlist  || DEF_WL;
 let trades     = stored?.trades     || [];
 let snapshots  = stored?.snapshots  || [];
@@ -848,8 +913,10 @@ const SEED_PRICES = {
   'HXT':     {price:47.50,  prev:47.20, cy:'CAD'},
   'VIU':     {price:39.80,  prev:39.60, cy:'CAD'},
   'HXS':     {price:106.50, prev:105.80,cy:'CAD'},
-  'VOO':     {price:653.77, prev:648.20, cy:'USD'},  // updated April 21 2026
+  'VOO':     {price:653.77, prev:648.20, cy:'USD'},
   'ATL789':  {price:19.44,  prev:19.44, cy:'CAD'},
+  'KHC':     {price:22.08,  prev:22.21, cy:'USD'},
+  'TDMIF':   {price:30.62,  prev:30.50, cy:'CAD'},
 };
 let prices = {...SEED_PRICES};
 let autoDivs={};
@@ -1021,7 +1088,19 @@ function ST_stats(p){
 }
 
 // ── RENDER ALL ────────────────────────────────────────────────────────────────
-function renderAll(){renderKPI();renderHoldings();renderMobileCards();renderListView();renderAccounts();renderIncome();renderAllocation();renderPerformance();renderRealized();renderWatchlist();}
+function renderAll(){
+  renderKPI();
+  renderIncomeSummaryBar();
+  renderHoldings();
+  renderMobileCards();
+  renderListView();
+  renderAccounts();
+  renderIncome();
+  renderAllocation();
+  renderPerformance();
+  renderRealized();
+  renderWatchlist();
+}
 
 function fmtK(v, dc) {
   // Format a value that is already in display currency
@@ -1034,8 +1113,9 @@ function fmtK(v, dc) {
 }
 
 function renderKPI(){
+  const fps = filteredPositions();
   let mkt=0,paid=0,divs=0,totalRealPL=0;
-  positions.forEach(p=>{
+  fps.forEach(p=>{
     const s=ST_stats(p);
     mkt  += DV(s.mktVal||0, p.cy);
     paid += DV(s.paidIn,    p.cy);
@@ -1044,16 +1124,32 @@ function renderKPI(){
   trades.forEach(t=>{ totalRealPL += DV(t.realPL||0, t.cy); });
   const nav=mkt-paid, total=nav+divs, pct=paid?total/paid*100:0;
   const dc=displayCcy;
-  // Show full dollar value for portfolio, not rounded to K
   const fmtFull = v => v==null||isNaN(v)?'—':(v<0?'-':'')+'$'+N(Math.abs(v),0)+' '+dc;
   document.getElementById('kpiStrip').innerHTML=`
-    <div class="kpi"><div class="kbar n"></div><div class="klbl">Portfolio value</div><div class="kval">${fmtFull(mkt)}</div><div class="ksub">All accounts · ${dc}</div></div>
+    <div class="kpi"><div class="kbar n"></div><div class="klbl">Portfolio value</div><div class="kval">${fmtFull(mkt)}</div><div class="ksub">${ownerFilter==='All'?'Household':''}  ${dc}</div></div>
     <div class="kpi"><div class="kbar n"></div><div class="klbl">Total paid in</div><div class="kval">${fmtFull(paid)}</div><div class="ksub">Across all positions</div></div>
     <div class="kpi"><div class="kbar ${C(nav)}"></div><div class="klbl">NAV gain/loss</div><div class="kval ${C(nav)}">${fmtK(nav,dc)}</div><div class="ksub">${Pct(paid?nav/paid*100:0)}</div></div>
     <div class="kpi"><div class="kbar g"></div><div class="klbl">Dividends received</div><div class="kval gold">${fmtK(divs,dc)}</div><div class="ksub">Auto + manual</div></div>
     <div class="kpi"><div class="kbar ${C(total)}"></div><div class="klbl">True total return</div><div class="kval ${C(total)}">${fmtK(total,dc)}</div><div class="ksub">${Pct(pct)}</div></div>
     <div class="kpi"><div class="kbar ${C(totalRealPL)}"></div><div class="klbl">Realized P&L</div><div class="kval ${C(totalRealPL)}">${fmtK(totalRealPL,dc)}</div><div class="ksub">Closed trades</div></div>
   `;
+
+  // Household breakdown bar
+  const owners = ['Craig','Kit'];
+  const ownerColors = {'Craig':'var(--blue)','Kit':'var(--purple)'};
+  let ownerTotals = {};
+  let grandTotal = 0;
+  owners.forEach(o => {
+    const v = positions.filter(p=>(p.owner||'Craig')===o).reduce((s,p)=>s+DV(ST_stats(p).mktVal||0,p.cy),0);
+    ownerTotals[o] = v;
+    grandTotal += v;
+  });
+  const barsEl = document.getElementById('householdBars');
+  const legendEl = document.getElementById('householdLegend');
+  if(barsEl && grandTotal > 0) {
+    barsEl.innerHTML = owners.map(o=>`<div style="width:${(ownerTotals[o]/grandTotal*100).toFixed(1)}%;background:${ownerColors[o]};"></div>`).join('');
+    legendEl.innerHTML = owners.map(o=>`<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${ownerColors[o]};margin-right:4px;"></span>${o} ${fmtK(ownerTotals[o],dc)}</span>`).join('');
+  }
 
   // Alert banner
   const alerts=positions.filter(p=>ST_stats(p).isAlert||ST_stats(p).isTarget);
@@ -1065,10 +1161,11 @@ function renderKPI(){
 
 function renderHoldings(){
   const b=document.getElementById('holdBody');
-  if(!positions.length){b.innerHTML='<tr><td colspan="14" class="empty">No positions yet.</td></tr>';return;}
-  // Calculate total portfolio value for category share
-  const totalMktDisp = positions.reduce((s,p)=>{const st=ST_stats(p);return s+DV(st.mktVal||0,p.cy);},0)||1;
-  b.innerHTML=positions.map(p=>{
+  const fps = filteredPositions();
+  if(!fps.length){b.innerHTML='<tr><td colspan="15" class="empty">No positions yet.</td></tr>';return;}
+  const totalMktDisp = fps.reduce((s,p)=>{const st=ST_stats(p);return s+DV(st.mktVal||0,p.cy);},0)||1;
+  const ownerColors = {'Craig':'var(--blue)','Kit':'var(--purple)'};
+  b.innerHTML=fps.map(p=>{
     const s=ST_stats(p);
     const lp=prices[p.tk],dc=lp?lp.price-lp.prev:null,dp=dc&&lp.prev?dc/lp.prev*100:null;
     const priceCol=s.price?`<div class="pb"><span class="pm num">${DM(s.price,p.cy)}</span><span class="pd ${C(dc)}">${dc!=null?(dc>=0?'+':'')+N(dc,2)+' ('+Pct(dp)+')':''}</span></div>`:'<span class="dim" style="font-size:11px">—</span>';
@@ -1080,17 +1177,19 @@ function renderHoldings(){
     const flags=`${s.isAlert?`<span class="tflag tf-dn">▼ Alert</span>`:''}${s.isTarget?`<span class="tflag tf-up">↑ Target hit</span>`:''}${p.notes?`<span class="tflag tf-note">✎ Note</span>`:''}`;
     // Category badge
     const cat = guessCat(p);
-    const catColors = {yield:'var(--gold)',index:'var(--blue)',crypto:'var(--dn)',single:'var(--purple)'};
-    const catLabels = {yield:'Yield',index:'Index',crypto:'Crypto',single:'Stock'};
+    const catColors = {yield:'var(--gold)',index:'var(--blue)',crypto:'var(--dn)',growth:'var(--purple)',income:'var(--up)'};
+    const catLabels = {yield:'Yield',index:'Index',crypto:'Crypto',growth:'Growth',income:'Income'};
     const catCol = `<span class="badge" style="background:${catColors[cat]}22;color:${catColors[cat]}">${catLabels[cat]||cat}</span>`;
-    // Portfolio share %
     const share = s.mktVal ? DV(s.mktVal,p.cy)/totalMktDisp*100 : 0;
-    // Yield — show both est % and actual yield on cost
     const actualYieldPct = s.paidIn && s.divs > 0 ? (s.divs/s.paidIn*100) : null;
-    const yieldCol = `<div class="pb"><span class="pm num gold">${p.yld||0}%</span>${actualYieldPct!=null?`<span class="pd gold">${N(actualYieldPct,1)}% on cost</span>`:''}</div>`;
+    const monthlyEst = s.mktVal ? DV(s.mktVal*(p.yld||0)/100/12, p.cy) : 0;
+    const yieldCol = `<div class="pb"><span class="pm num gold">${p.yld||0}%</span><span class="pd gold">${monthlyEst>0?'~'+fmtK(monthlyEst,displayCcy)+'/mo':''}</span></div>`;
+    const owner = p.owner || 'Craig';
+    const ownerCol = `<span style="font-size:10px;font-weight:600;color:${ownerColors[owner]||'var(--ink3)'};font-family:var(--mono)">${owner}</span>`;
     return`<tr class="${s.isAlert?'alert-row':''}">
       <td><div class="tkc"><span class="tk" onclick="openSum(${p.id})">${p.tk}</span><span class="tkn">${p.nm}</span>${flags?`<div class="tflags">${flags}</div>`:''}</div></td>
       <td><span class="badge b-${p.ac}">${p.ac}</span></td>
+      <td>${ownerCol}</td>
       <td>${catCol} <span class="dim" style="font-size:10px;font-family:var(--mono)">${N(share,1)}%</span></td>
       <td class="r num">${N(p.qty,p.qty<10?5:2)}</td>
       <td class="r">${yieldCol}</td>
@@ -1133,8 +1232,9 @@ function renderAccounts(){
 }
 
 function renderIncome(){
+  const fps = filteredPositions();
   let recv=0, estAnnual=0;
-  positions.forEach(p=>{
+  fps.forEach(p=>{
     const s=ST_stats(p);
     recv += DV(s.divs, p.cy);
     // Estimate: if we have actual distributions logged, annualize those
@@ -1147,8 +1247,8 @@ function renderIncome(){
     }
   });
   // Also calculate pure NAV-based estimate for comparison
-  const navEst = positions.reduce((s,p)=>{const st=ST_stats(p);return s+(st.mktVal?DV(st.mktVal*(p.yld||0)/100,p.cy):0);},0);
-  const totalPaid = positions.reduce((s,p)=>s+DV(p.qty*p.cost,p.cy),0);
+  const navEst = fps.reduce((s,p)=>{const st=ST_stats(p);return s+(st.mktVal?DV(st.mktVal*(p.yld||0)/100,p.cy):0);},0);
+  const totalPaid = fps.reduce((s,p)=>s+DV(p.qty*p.cost,p.cy),0);
   const dc=displayCcy;
   const fmtIC=v=>{const a=Math.abs(v);return(v<0?'-':'')+'$'+N(a>=1000?a/1000:a,a>=1000?1:2)+(a>=1000?'K':'')+' '+dc;};
   document.getElementById('incKpi').innerHTML=`
@@ -1158,7 +1258,7 @@ function renderIncome(){
     <div class="ic"><div class="icl">Yield on cost</div><div class="icv">${Pct(totalPaid?navEst/totalPaid*100:0)}</div><div class="ics">vs. total paid in</div></div>
   `;
   // Bar chart — show both actual received AND estimated annual side by side
-  const byPos=positions.map(p=>{
+  const byPos=fps.map(p=>{
     const s=ST_stats(p);
     const navEstP = DV(s.mktVal?(s.mktVal*(p.yld||0)/100):0, p.cy);
     const recvP = DV(s.divs, p.cy);
@@ -1174,7 +1274,7 @@ function renderIncome(){
       </div>
     </div>`).join('');
   const all=[];
-  positions.forEach(p=>{p.dists.forEach(d=>all.push({...d,tk:p.tk,ac:p.ac,cy:p.cy,src:'manual'}));if(p.src==='auto'&&autoDivs[p.tk])all.push({tk:p.tk,ac:p.ac,cy:p.cy,src:'auto',date:'auto-fetched',amt:autDiv(p).toFixed(2),note:`${N(p.qty,0)} shares × hist. div`});});
+  fps.forEach(p=>{p.dists.forEach(d=>all.push({...d,tk:p.tk,ac:p.ac,cy:p.cy,src:'manual'}));if(p.src==='auto'&&autoDivs[p.tk])all.push({tk:p.tk,ac:p.ac,cy:p.cy,src:'auto',date:'auto-fetched',amt:autDiv(p).toFixed(2),note:`${N(p.qty,0)} shares × hist. div`});});
   all.sort((a,b)=>new Date(b.date)-new Date(a.date));
   document.getElementById('incBody').innerHTML=all.length?all.map(d=>`<tr><td><span class="num" style="font-weight:500;">${d.tk}</span></td><td><span class="badge b-${d.ac}">${d.ac}</span></td><td class="r num">${d.date}</td><td class="r num gold">${DM(parseFloat(d.amt),d.cy)}</td><td class="r"><span class="ccy">${d.cy}</span></td><td><span style="font-size:9px;font-family:var(--mono);color:${d.src==='auto'?'var(--up)':'var(--gold)'}">${d.src==='auto'?'↻ auto':'✎ manual'}</span></td><td style="font-size:11px;color:var(--ink3)">${d.note||'—'}</td></tr>`).join(''):'<tr><td colspan="7" class="empty">No dividends logged yet.</td></tr>';
   setTimeout(()=>renderIncomeBarChart('incomeBarChart'), 50);
@@ -1184,13 +1284,14 @@ let allocCharts={};
 function renderAllocation(){
   const COLORS_LIGHT=['#0d7c4a','#1a5fa8','#b07d2a','#c0392b','#6d4fc2','#2c8080'];
   const COLORS_DARK=['#34c97a','#5b9cf6','#e0a84a','#f07070','#a98af5','#40b0b0'];
-  const cats=['yield','index','crypto','single'];
-  const catLabels={'yield':'Yield/CC ETFs','index':'Index ETFs','crypto':'Crypto','single':'Single stocks'};
+  const cats=['yield','index','growth','income','crypto'];
+  const catLabels={'yield':'Yield/Income ETFs','index':'Index/Passive','growth':'Growth Stocks','income':'Dividend/Value','crypto':'Crypto'};
   const accts=['RRSP','TFSA','Corp','Crypto'];
+  const fps = filteredPositions();
   // by category
-  const bycat=cats.map(c=>{let v=0;positions.forEach(p=>{const s=ST_stats(p);if((p.category||guessCat(p))===c&&s.mktVal)v+=DV(s.mktVal,p.cy);});return{lbl:catLabels[c],val:v};}).filter(x=>x.val>0);
+  const bycat=cats.map(c=>{let v=0;fps.forEach(p=>{const s=ST_stats(p);if(guessCat(p)===c&&s.mktVal)v+=DV(s.mktVal,p.cy);});return{lbl:catLabels[c],val:v};}).filter(x=>x.val>0);
   // by account
-  const byacct=accts.map(a=>{let v=0;positions.forEach(p=>{const s=ST_stats(p);if(p.ac===a&&s.mktVal)v+=DV(s.mktVal,p.cy);});return{lbl:a,val:v};}).filter(x=>x.val>0);
+  const byacct=accts.map(a=>{let v=0;fps.forEach(p=>{const s=ST_stats(p);if(p.ac===a&&s.mktVal)v+=DV(s.mktVal,p.cy);});return{lbl:a,val:v};}).filter(x=>x.val>0);
   const colors=isDark?COLORS_DARK:COLORS_LIGHT;
   const totalMkt=bycat.reduce((s,x)=>s+x.val,0)||1;
 
@@ -1230,7 +1331,21 @@ function renderAllocation(){
   },50);
 }
 
-function guessCat(p){if(p.cy==='CAD'&&(p.tk.includes('HHIS')||p.tk.includes('HDIV')||p.tk.includes('QQCL')||p.tk.includes('CLSA')||p.tk.includes('MSTE')||p.tk.includes('BIGY')))return'yield';if(p.tk==='BTC-CAD')return'crypto';if(['VTV','SCHD','XIC','VFV'].includes(p.tk))return'index';if(p.tk==='MSTY'||p.tk==='PLYY')return'yield';return p.category||'single';}
+function guessCat(p){
+  const tk = p.tk;
+  const yld = p.yld || 0;
+  if(tk === 'BTC-CAD') return 'crypto';
+  // High yield income ETFs
+  if(['HHIS','HDIV','QQCL','CLSA','MSTE','BIGY','MSTY','PLYY','HDIV','ATL789','TDMIF'].includes(tk)) return 'yield';
+  if(yld >= 8) return 'yield';
+  // Index/passive
+  if(['VTV','SCHD','XIC','VFV','HXT','HXS','VOO','VIU'].includes(tk)) return 'index';
+  // Growth stocks
+  if(['SHOP','CSU','MSTR','BMNR'].includes(tk)) return 'growth';
+  // Dividend/value
+  if(['OXY','KHC'].includes(tk)) return 'income';
+  return p.category || 'growth';
+}
 function setTarget(cat,val){targets[cat]=parseFloat(val)||0;saveStore();renderAllocation();}
 
 let perfChart=null;
@@ -1385,6 +1500,201 @@ function renderMobileCards(){
 
 // ── LIST VIEW ─────────────────────────────────────────────────────────────────
 let holdView = localStorage.getItem('craig_holdview') || 'table';
+let ownerFilter = 'All';
+let returnView = 'lifetime'; // 'lifetime' or 'ytd'
+
+function setReturnView(v, el) {
+  returnView = v;
+  document.querySelectorAll('#returnToggle button').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  if(document.getElementById('view-charts').classList.contains('on')) renderCharts();
+}
+
+// ── INCOME SUMMARY BAR ────────────────────────────────────────────────────────
+function renderIncomeSummaryBar(){
+  const fps = filteredPositions();
+  const dc = displayCcy;
+  const monthlyEst = fps.reduce((s,p)=>{
+    const st = ST_stats(p);
+    return s + DV(st.mktVal?(st.mktVal*(p.yld||0)/100/12):0, p.cy);
+  }, 0);
+  const annualEst = monthlyEst * 12;
+  const totalMkt = fps.reduce((s,p)=>s+DV(ST_stats(p).mktVal||0,p.cy),0)||1;
+  const yieldOnMkt = annualEst/totalMkt*100;
+
+  // Rebalancing — biggest drift
+  const cats = ['yield','index','growth','income','crypto'];
+  const catTargets = targets;
+  let biggestDrift = null, biggestDriftAmt = 0;
+  cats.forEach(c => {
+    const v = fps.reduce((s,p)=>{const st=ST_stats(p);return guessCat(p)===c?s+DV(st.mktVal||0,p.cy):s;},0);
+    const pct = v/totalMkt*100;
+    const tgt = catTargets[c]||0;
+    const drift = pct - tgt;
+    if(Math.abs(drift) > biggestDriftAmt) { biggestDriftAmt = Math.abs(drift); biggestDrift = {cat:c,drift,pct,tgt}; }
+  });
+
+  const el = document.getElementById('incomeSummaryBar');
+  if(!el) return;
+  const catNames = {yield:'Yield',index:'Index',growth:'Growth',income:'Income',crypto:'Crypto'};
+  const driftHtml = biggestDrift ? `
+    <div style="background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:12px 16px;">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:600;margin-bottom:4px;">Biggest rebalance needed</div>
+      <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:${biggestDrift.drift>0?'var(--dn)':'var(--up)'}">${catNames[biggestDrift.cat]} ${biggestDrift.drift>0?'+':''}${N(biggestDrift.drift,1)}%</div>
+      <div style="font-size:11px;color:var(--ink3);">${N(biggestDrift.pct,1)}% actual vs ${biggestDrift.tgt}% target</div>
+    </div>` : '';
+
+  // BTC position quick view
+  const btcPos = positions.find(p=>p.tk==='BTC-CAD');
+  const btcPrice = prices['BTC-CAD']?.price||0;
+  const btcVal = btcPos ? btcPos.qty * btcPrice : 0;
+  const btcHtml = btcPos ? `
+    <div style="background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:12px 16px;">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:600;margin-bottom:4px;">BTC position</div>
+      <div style="font-family:var(--mono);font-size:15px;font-weight:600;">${DM(btcVal,'CAD',true)}</div>
+      <div style="font-size:11px;color:var(--ink3);">${N(btcPos.qty,4)} BTC @ ${fmtK(btcPrice,'CAD')}</div>
+    </div>` : '';
+
+  el.innerHTML = `
+    <div style="background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:12px 16px;">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);font-weight:600;margin-bottom:4px;">Est. monthly income</div>
+      <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--gold)">${fmtK(monthlyEst,dc)}</div>
+      <div style="font-size:11px;color:var(--ink3);">${fmtK(annualEst,dc)}/yr · ${N(yieldOnMkt,1)}% portfolio yield</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:12px 16px;">
+      <div style="font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);font-weight:600;margin-bottom:4px;">Est. daily income</div>
+      <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--gold)">${fmtK(annualEst/365,dc)}</div>
+      <div style="font-size:11px;color:var(--ink3);">While you sleep 💤</div>
+    </div>
+    ${driftHtml}
+    ${btcHtml}
+  `;
+}
+
+// ── BTC TRIM CALCULATOR ───────────────────────────────────────────────────────
+function renderBTCTrimCalc(){
+  const el = document.getElementById('btcTrimCalc'); if(!el) return;
+  const btcPos = positions.find(p=>p.tk==='BTC-CAD');
+  if(!btcPos){el.innerHTML='<div class="empty">No BTC position found.</div>';return;}
+  const qty = btcPos.qty;
+  const avgCost = btcPos.cost; // CAD per BTC
+  const targets = [100000,110000,120000,130000,140000,150000,175000,200000];
+  const trimPcts = [10,20,30,50]; // % of position to trim at each level
+
+  el.innerHTML = targets.map(price => {
+    const posVal = qty * price;
+    const gain = posVal - (qty * avgCost);
+    const gainPct = gain / (qty * avgCost) * 100;
+    const taxEst = Math.max(0, gain * 0.5 * 0.45); // 50% inclusion, ~45% marginal BC
+    const trimAmt10 = qty * 0.10 * price;
+    const trimNet10 = trimAmt10 - (Math.max(0, qty*0.10*price - qty*0.10*avgCost) * 0.5 * 0.45);
+    const isAbove = (prices['BTC-CAD']?.price||0) >= price;
+    return `<div style="background:${isAbove?'var(--up-bg)':'var(--white)'};border:1px solid ${isAbove?'var(--up)':'var(--line2)'};border-radius:var(--r);padding:12px;">
+      <div style="font-family:var(--mono);font-size:13px;font-weight:600;margin-bottom:6px;">${isAbove?'✓ ':''} $${N(price/1000,0)}K CAD</div>
+      <div style="font-size:11px;color:var(--ink2);margin-bottom:2px;">Full pos: ${fmtK(posVal,'CAD')}</div>
+      <div style="font-size:11px;color:${gain>=0?'var(--up)':'var(--dn)'};margin-bottom:2px;">${gain>=0?'+':''}${fmtK(gain,'CAD')} (${N(gainPct,0)}%)</div>
+      <div style="font-size:10px;color:var(--ink3);margin-bottom:4px;">Est. tax: ~${fmtK(taxEst,'CAD')}</div>
+      <div style="font-size:10px;font-weight:600;color:var(--gold);">10% trim → ${fmtK(trimNet10,'CAD')} net</div>
+    </div>`;
+  }).join('');
+}
+
+// ── REBALANCING PANEL ─────────────────────────────────────────────────────────
+function renderRebalancePanel(){
+  const el = document.getElementById('rebalancePanel'); if(!el) return;
+  const fps = filteredPositions();
+  const cats = ['yield','index','growth','income','crypto'];
+  const catNames = {yield:'Yield/Income ETFs',index:'Index/Passive',growth:'Growth Stocks',income:'Dividend/Value',crypto:'Crypto'};
+  const catColors = {yield:'var(--gold)',index:'var(--blue)',growth:'var(--purple)',income:'var(--up)',crypto:'var(--dn)'};
+  const totalMkt = fps.reduce((s,p)=>s+DV(ST_stats(p).mktVal||0,p.cy),0)||1;
+
+  const rows = cats.map(c => {
+    const v = fps.reduce((s,p)=>{const st=ST_stats(p);return guessCat(p)===c?s+DV(st.mktVal||0,p.cy):s;},0);
+    const pct = v/totalMkt*100;
+    const tgt = targets[c]||0;
+    const drift = pct - tgt;
+    const driftCls = Math.abs(drift)<3?'ok':Math.abs(drift)<8?'warn':'alert';
+    const driftColor = driftCls==='ok'?'var(--up)':driftCls==='warn'?'var(--gold)':'var(--dn)';
+    const action = drift>3?'Consider trimming':'drift<-3'?'Consider adding':'On target';
+    const actionText = drift>3?`Overweight by ${N(drift,1)}% — consider trimming`:`Underweight by ${N(Math.abs(drift),1)}% — consider adding`;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);">
+      <span style="width:130px;font-size:12px;font-weight:500;color:${catColors[c]}">${catNames[c]}</span>
+      <div style="flex:1;background:var(--paper);border-radius:4px;height:8px;overflow:hidden;">
+        <div style="height:100%;background:${catColors[c]};width:${Math.min(pct,100)}%;border-radius:4px;"></div>
+      </div>
+      <span style="font-family:var(--mono);font-size:12px;width:45px;text-align:right">${N(pct,1)}%</span>
+      <span style="font-size:11px;color:var(--ink3);width:35px;text-align:center">→ ${tgt}%</span>
+      <span style="font-family:var(--mono);font-size:12px;font-weight:600;color:${driftColor};width:55px;text-align:right">${drift>0?'+':''}${N(drift,1)}%</span>
+      <span style="font-size:10px;color:${driftColor};flex:1">${Math.abs(drift)>3?actionText:'✓ On target'}</span>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = rows || '<div class="empty">No data.</div>';
+}
+
+// ── DISTRIBUTION CALENDAR ─────────────────────────────────────────────────────
+function renderDistributionCalendar(){
+  destroyChart('chartDistCalendar');
+  const ctx = document.getElementById('chartDistCalendar'); if(!ctx) return;
+  const fps = filteredPositions();
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dc = displayCcy;
+
+  // Monthly paying positions (yield ETFs, MSTY, etc.)
+  const monthly = fps.filter(p => p.yld >= 8); // high yield = monthly payers assumption
+  const quarterly = fps.filter(p => p.yld > 0 && p.yld < 8);
+
+  const monthlyTotal = monthly.reduce((s,p)=>{
+    const st = ST_stats(p);
+    return s + DV(st.mktVal?(st.mktVal*(p.yld||0)/100/12):0, p.cy);
+  },0);
+  const quarterlyMonthly = quarterly.reduce((s,p)=>{
+    const st = ST_stats(p);
+    return s + DV(st.mktVal?(st.mktVal*(p.yld||0)/100/12):0, p.cy);
+  },0);
+
+  // Build monthly data — quarterly payers hit in Mar/Jun/Sep/Dec
+  const data = months.map((m,i) => {
+    const qMonths = [2,5,8,11]; // Mar, Jun, Sep, Dec (0-indexed)
+    return monthlyTotal + (qMonths.includes(i) ? quarterlyMonthly * 3 : 0);
+  });
+
+  const colors = chartColors(isDark);
+  chartInstances['chartDistCalendar'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Est. distributions',
+        data: data.map(v => parseFloat(v.toFixed(2))),
+        backgroundColor: data.map((_,i) => [2,5,8,11].includes(i)
+          ? (isDark?'rgba(224,168,74,.9)':'rgba(176,125,42,.9)')
+          : (isDark?'rgba(224,168,74,.5)':'rgba(176,125,42,.5)')),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend:{display:false}, tooltip:{callbacks:{label: c => fmtK(c.raw,dc)+' est.'}} },
+      scales: {
+        y: { ticks:{callback:v=>fmtK(v,dc)}, grid:{color:isDark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)'} },
+        x: { grid:{display:false} }
+      }
+    }
+  });
+}
+
+function setOwner(o, el) {
+  ownerFilter = o;
+  document.querySelectorAll('#ownerPill button').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  renderAll();
+}
+
+function filteredPositions() {
+  if(ownerFilter === 'All') return positions;
+  return positions.filter(p => (p.owner || 'Craig') === ownerFilter);
+}
 
 function setHoldView(v, el) {
   holdView = v;
@@ -1698,43 +2008,61 @@ function renderCharts() {
     }
   }
 
-  // 2. Total return breakdown — NAV vs dividends stacked bar
+  // 2. Total return breakdown — NAV vs dividends, lifetime or YTD
   destroyChart('chartReturnBar');
   const ctx2 = document.getElementById('chartReturnBar');
   if(ctx2) {
-    const top = positions.map(p => {
+    const fps2 = filteredPositions();
+    // YTD: find Jan 1 2026 snapshot value, calculate return since then
+    const ytdSnap = snapshots.find(s => s.date <= '2026-01-01') || snapshots.sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
+    const top = fps2.map(p => {
       const s = ST_stats(p);
-      return { tk: p.tk, nav: DV(s.navGL||0, p.cy), divs: DV(s.divs, p.cy) };
-    }).filter(x => Math.abs(x.nav) > 0 || x.divs > 0).sort((a,b) => (b.nav+b.divs)-(a.nav+a.divs)).slice(0,15);
-    const upColor  = isDark ? '#34c97a' : '#0d7c4a';
-    const dnColor  = isDark ? '#f07070' : '#c0392b';
-    const goldColor= isDark ? '#e0a84a' : '#b07d2a';
+      let nav, divs;
+      if(returnView === 'ytd' && ytdSnap) {
+        // Approximate YTD as proportion of total return
+        const totalMonths = 12;
+        const monthsElapsed = new Date().getMonth() + 1;
+        const ytdFactor = monthsElapsed / totalMonths;
+        nav = DV((s.navGL||0) * ytdFactor, p.cy);
+        divs = DV(s.divs * ytdFactor, p.cy);
+      } else {
+        nav = DV(s.navGL||0, p.cy);
+        divs = DV(s.divs, p.cy);
+      }
+      return { tk: p.tk+(p.owner==='Kit'?' (K)':''), nav, divs };
+    }).filter(x => Math.abs(x.nav) > 0 || x.divs > 0)
+      .sort((a,b) => (b.nav+b.divs)-(a.nav+a.divs)).slice(0,15);
+    const upColor = isDark?'#34c97a':'#0d7c4a';
+    const dnColor = isDark?'#f07070':'#c0392b';
+    const goldColor = isDark?'#e0a84a':'#b07d2a';
     chartInstances['chartReturnBar'] = new Chart(ctx2, {
       type: 'bar',
       data: {
-        labels: top.map(x => x.tk),
+        labels: top.map(x=>x.tk),
         datasets: [
-          { label: 'NAV gain/loss', data: top.map(x => parseFloat(x.nav.toFixed(2))), backgroundColor: top.map(x => x.nav >= 0 ? (isDark?'rgba(52,201,122,.7)':'rgba(13,124,74,.75)') : (isDark?'rgba(240,112,112,.7)':'rgba(192,57,43,.75)')), borderRadius: 3 },
-          { label: 'Dividends', data: top.map(x => parseFloat(x.divs.toFixed(2))), backgroundColor: isDark?'rgba(224,168,74,.75)':'rgba(176,125,42,.75)', borderRadius: 3 }
+          { label:'NAV gain/loss', data:top.map(x=>parseFloat(x.nav.toFixed(2))), backgroundColor:top.map(x=>x.nav>=0?(isDark?'rgba(52,201,122,.7)':'rgba(13,124,74,.75)'):(isDark?'rgba(240,112,112,.7)':'rgba(192,57,43,.75)')), borderRadius:3 },
+          { label:'Dividends', data:top.map(x=>parseFloat(x.divs.toFixed(2))), backgroundColor:isDark?'rgba(224,168,74,.75)':'rgba(176,125,42,.75)', borderRadius:3 }
         ]
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmtK(c.raw, dc) } } },
-        scales: { x: { stacked: true, grid: { display: false }, ticks: { autoSkip: false, maxRotation: 45 } }, y: { stacked: false, ticks: { callback: v => fmtK(v,dc) }, grid: { color: isDark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)' } } }
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{display:false}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtK(c.raw,dc)}} },
+        scales:{ x:{stacked:true,grid:{display:false},ticks:{autoSkip:false,maxRotation:45}}, y:{stacked:false,ticks:{callback:v=>fmtK(v,dc)},grid:{color:isDark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)'}} }
       }
     });
     document.getElementById('returnBarLegend').innerHTML = `
       <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:${upColor}"></span>NAV gain</span>
       <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:${dnColor}"></span>NAV loss</span>
-      <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:${goldColor}"></span>Dividends</span>`;
+      <span class="chart-legend-item"><span class="chart-legend-swatch" style="background:${goldColor}"></span>Dividends</span>
+      ${returnView==='ytd'?'<span style="font-size:10px;color:var(--ink3);margin-left:8px;">* YTD approximation based on time elapsed</span>':''}`;
   }
 
   // 3 & 4. Allocation donuts
-  const cats = ['yield','index','crypto','single'];
-  const catLabels = { yield:'Yield/CC ETFs', index:'Index ETFs', crypto:'Crypto', single:'Single stocks' };
+  const cats = ['yield','index','growth','income','crypto'];
+  const catLabels = { yield:'Yield/Income ETFs', index:'Index/Passive', growth:'Growth Stocks', income:'Dividend/Value', crypto:'Crypto' };
   const accts = ['RRSP','TFSA','Corp','Crypto'];
-  const totalMkt = positions.reduce((s,p) => { const st=ST_stats(p); return s + DV(st.mktVal||0,p.cy); }, 0) || 1;
+  const fps3 = filteredPositions();
+  const totalMkt = fps3.reduce((s,p) => { const st=ST_stats(p); return s + DV(st.mktVal||0,p.cy); }, 0) || 1;
 
   function makeDonutChart(canvasId, labels, vals, colrs, legendId) {
     destroyChart(canvasId);
@@ -1749,16 +2077,32 @@ function renderCharts() {
     }
   }
 
-  const catVals = cats.map(c => { let v=0; positions.forEach(p => { const s=ST_stats(p); if(guessCat(p)===c && s.mktVal) v+=DV(s.mktVal,p.cy); }); return v; });
+  const catVals = cats.map(c => { let v=0; fps3.forEach(p => { const s=ST_stats(p); if(guessCat(p)===c && s.mktVal) v+=DV(s.mktVal,p.cy); }); return v; });
   const catFilt = cats.map((c,i) => ({lbl:catLabels[c],val:catVals[i]})).filter(x=>x.val>0);
   makeDonutChart('chartAllocCat', catFilt.map(x=>x.lbl), catFilt.map(x=>x.val), colors.slice(0,catFilt.length), 'allocCatLegend');
 
-  const acctVals = accts.map(a => { let v=0; positions.forEach(p => { const s=ST_stats(p); if(p.ac===a && s.mktVal) v+=DV(s.mktVal,p.cy); }); return v; });
+  const acctVals = accts.map(a => { let v=0; fps3.forEach(p => { const s=ST_stats(p); if(p.ac===a && s.mktVal) v+=DV(s.mktVal,p.cy); }); return v; });
   const acctFilt = accts.map((a,i) => ({lbl:a,val:acctVals[i]})).filter(x=>x.val>0);
   makeDonutChart('chartAllocAcct', acctFilt.map(x=>x.lbl), acctFilt.map(x=>x.val), colors.slice(0,acctFilt.length), 'allocAcctLegend');
 
+  // 5. Household owner breakdown donut (only when showing All)
+  if(ownerFilter === 'All') {
+    const ownerVals = ['Craig','Kit'].map(o => positions.filter(p=>(p.owner||'Craig')===o).reduce((s,p)=>{const st=ST_stats(p);return s+DV(st.mktVal||0,p.cy);},0));
+    const ownerFilt = ['Craig','Kit'].map((o,i)=>({lbl:o,val:ownerVals[i]})).filter(x=>x.val>0);
+    makeDonutChart('chartOwnerSplit', ownerFilt.map(x=>x.lbl), ownerFilt.map(x=>x.val), [isDark?'#5b9cf6':'#1a5fa8', isDark?'#a98af5':'#6d4fc2'], 'ownerSplitLegend');
+  }
+
   // 5. Monthly income bar (Charts tab)
   renderIncomeBarChart('chartMonthlyInc');
+
+  // 6. Distribution calendar
+  renderDistributionCalendar();
+
+  // 7. BTC trim calculator
+  renderBTCTrimCalc();
+
+  // 8. Rebalancing panel
+  renderRebalancePanel();
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
@@ -1771,14 +2115,12 @@ async function init() {
   }
 
   if (cloudData) {
-    // Cloud data wins — more up to date across devices
-    if (cloudData.positions)  positions  = cloudData.positions;
+    if (cloudData.positions)  positions  = mergePositions(cloudData.positions, DEF);
     if (cloudData.watchlist)  watchlist  = cloudData.watchlist;
     if (cloudData.trades)     trades     = cloudData.trades;
     if (cloudData.snapshots)  snapshots  = cloudData.snapshots;
     if (cloudData.targets)    targets    = cloudData.targets;
-    // Mirror to localStorage
-    try { localStorage.setItem(SK, JSON.stringify(cloudData)); } catch(e) {}
+    try { localStorage.setItem(SK, JSON.stringify({positions,watchlist,trades,snapshots,targets})); } catch(e) {}
     showSyncStatus('✓ Loaded from cloud');
   }
 
