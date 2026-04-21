@@ -911,40 +911,22 @@ async function fetchFinnhub(tk, sym){
   return false;
 }
 
+// Your Netlify proxy URL — set this after deploying to Netlify
+const PROXY_URL = 'https://transcendent-chebakia-e7032c.netlify.app/.netlify/functions/prices';
+
 async function fetchCanadian(tk, sym){
-  // Strip .TO suffix for TMX
-  const base = sym.replace('.TO','');
-  
-  // Try TMX Money (TSX's own data)
+  if(PROXY_URL === 'YOUR_NETLIFY_URL') return false;
   try {
-    const r = await fetch(`https://app-money.tmx.com/graphql`, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {'Content-Type':'application/json','Accept':'application/json'},
-      body: JSON.stringify({query:`{getQuoteBySymbol(symbol:"${base}",locale:"en"){price,prevClose}}`}),
-      signal: AbortSignal.timeout(6000)
+    const r = await fetch(`${PROXY_URL}?symbols=${encodeURIComponent(sym)}`, {
+      signal: AbortSignal.timeout(8000)
     });
     const d = await r.json();
-    const q = d?.data?.getQuoteBySymbol;
+    const q = d?.[sym];
     if(q?.price > 0){
-      prices[tk] = { price: parseFloat(q.price), prev: parseFloat(q.prevClose)||parseFloat(q.price), cy:'CAD' };
+      prices[tk] = { price: q.price, prev: q.prev || q.price, cy: 'CAD' };
       return true;
     }
   } catch(e) {}
-
-  // Try Alpha Vantage free tier as fallback (no CORS issues, 25 req/day free)
-  try {
-    const r = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(sym)}&apikey=demo`, {
-      signal: AbortSignal.timeout(6000)
-    });
-    const d = await r.json();
-    const q = d?.['Global Quote'];
-    if(q?.['05. price'] > 0){
-      prices[tk] = { price: parseFloat(q['05. price']), prev: parseFloat(q['08. previous close'])||parseFloat(q['05. price']), cy:'CAD' };
-      return true;
-    }
-  } catch(e) {}
-
   return false;
 }
 
