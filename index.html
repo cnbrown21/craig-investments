@@ -371,7 +371,71 @@ html.dark .bnav-item.on .bi-icon{filter:brightness(2);}
   .fx-wrap,.utxt{display:none;}
 }
 
-/* ── GOALS ── */
+/* ── QUICK GLANCE WIDGET ── */
+.qg-widget{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:16px 20px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;}
+.qg-left{display:flex;flex-direction:column;gap:2px;}
+.qg-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--ink3);}
+.qg-goal{font-size:13px;font-weight:600;}
+.qg-progress-wrap{display:flex;flex-direction:column;gap:6px;}
+.qg-bar{height:10px;background:var(--paper);border-radius:5px;overflow:hidden;position:relative;}
+.qg-fill{height:100%;border-radius:5px;transition:width .6s ease;}
+.qg-pace-marker{position:absolute;top:0;height:100%;width:2px;background:var(--ink3);opacity:.5;}
+.qg-labels{display:flex;justify-content:space-between;font-size:10px;font-family:var(--mono);color:var(--ink3);}
+.qg-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.qg-pct{font-family:var(--mono);font-size:22px;font-weight:700;}
+.qg-status{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;}
+@media(max-width:768px){.qg-widget{grid-template-columns:1fr;gap:10px;}.qg-right{align-items:flex-start;flex-direction:row;align-items:center;gap:12px;}}
+
+/* ── STRATEGY TAB ── */
+.strat-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:12px;flex-wrap:wrap;}
+.strat-title{font-size:17px;font-weight:700;}
+.strat-sub{font-size:11px;color:var(--ink3);margin-top:3px;}
+.strat-gen-btn{background:var(--ink);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;}
+.strat-gen-btn:hover{opacity:.85;}
+.strat-gen-btn:disabled{opacity:.5;cursor:not-allowed;}
+.strat-section{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:20px;margin-bottom:14px;}
+.strat-section-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.strat-body{font-size:13px;color:var(--ink2);line-height:1.75;}
+.strat-body p{margin-bottom:10px;}
+.strat-body p:last-child{margin-bottom:0;}
+.strat-badge{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;margin-left:auto;}
+.strat-badge.ok{background:var(--up-bg);color:var(--up);}
+.strat-badge.warn{background:var(--gold-bg);color:var(--gold);}
+.strat-badge.alert{background:var(--dn-bg);color:var(--dn);}
+/* Rec cards */
+.strat-rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:768px){.strat-rec-grid{grid-template-columns:1fr;}}
+.strat-rec{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:14px;position:relative;overflow:hidden;}
+.strat-rec::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.strat-rec.buy::before{background:var(--up);}
+.strat-rec.hold::before{background:var(--blue);}
+.strat-rec.trim::before{background:var(--gold);}
+.strat-rec.watch::before{background:var(--dn);}
+.strat-rec.sell::before{background:var(--dn);}
+.strat-rec-action{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.strat-rec.buy .strat-rec-action{color:var(--up);}
+.strat-rec.hold .strat-rec-action{color:var(--blue);}
+.strat-rec.trim .strat-rec-action{color:var(--gold);}
+.strat-rec.watch .strat-rec-action,.strat-rec.sell .strat-rec-action{color:var(--dn);}
+.strat-rec-tk{font-family:var(--mono);font-size:14px;font-weight:700;margin-bottom:2px;}
+.strat-rec-body{font-size:12px;color:var(--ink2);line-height:1.6;margin-top:6px;}
+/* Risk items */
+.strat-risk{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);}
+.strat-risk:last-child{border-bottom:none;}
+.strat-risk-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.strat-risk-dot.high{background:var(--dn);}
+.strat-risk-dot.med{background:var(--gold);}
+.strat-risk-dot.low{background:var(--up);}
+/* Rebalance table */
+.rebal-row{display:grid;grid-template-columns:130px 1fr 70px 70px 80px 120px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:12px;}
+.rebal-row:last-child{border-bottom:none;}
+.rebal-header{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;}
+.rebal-action-pill{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:600;text-align:center;}
+.rebal-action-pill.trim{background:var(--gold-bg);color:var(--gold);}
+.rebal-action-pill.add{background:var(--up-bg);color:var(--up);}
+.rebal-action-pill.hold{background:var(--paper);color:var(--ink3);}
+.strat-disclaimer{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;font-size:11px;color:var(--ink3);line-height:1.6;margin-top:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
 .goal-card{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:20px;margin-bottom:14px;}
 .goal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:12px;}
 .goal-name{font-size:15px;font-weight:600;color:var(--ink);}
@@ -453,6 +517,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div class="htab"     onclick="ST('allocation',this)">Allocation</div>
     <div class="htab"     onclick="ST('performance',this)">Performance</div>
     <div class="htab"     onclick="ST('goals',this)">Goals 🎯</div>
+    <div class="htab"     onclick="ST('strategy',this)">Strategy ⚡</div>
     <div class="htab"     onclick="ST('realized',this)">Realized</div>
     <div class="htab"     onclick="ST('charts',this)">Charts</div>
     <div class="htab"     onclick="ST('watchlist',this)">Watchlist</div>
@@ -485,13 +550,14 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 
 <!-- BOTTOM NAV -->
 <nav class="bnav">
-  <div class="bnav-inner" style="grid-template-columns:repeat(9,1fr)">
+  <div class="bnav-inner" style="grid-template-columns:repeat(10,1fr)">
     <div class="bnav-item on"  onclick="STM('holdings',this)"><span class="bi-icon">📊</span><span class="bi-lbl">Holdings</span></div>
     <div class="bnav-item"     onclick="STM('accounts',this)"><span class="bi-icon">🏦</span><span class="bi-lbl">Accounts</span></div>
     <div class="bnav-item"     onclick="STM('income',this)"><span class="bi-icon">💰</span><span class="bi-lbl">Income</span></div>
     <div class="bnav-item"     onclick="STM('allocation',this)"><span class="bi-icon">🥧</span><span class="bi-lbl">Alloc</span></div>
     <div class="bnav-item"     onclick="STM('performance',this)"><span class="bi-icon">📈</span><span class="bi-lbl">Perf</span></div>
     <div class="bnav-item"     onclick="STM('goals',this)"><span class="bi-icon">🎯</span><span class="bi-lbl">Goals</span></div>
+    <div class="bnav-item"     onclick="STM('strategy',this)"><span class="bi-icon">⚡</span><span class="bi-lbl">Strategy</span></div>
     <div class="bnav-item"     onclick="STM('realized',this)"><span class="bi-icon">✅</span><span class="bi-lbl">Realized</span></div>
     <div class="bnav-item"     onclick="STM('charts',this)"><span class="bi-icon">📉</span><span class="bi-lbl">Charts</span></div>
     <div class="bnav-item"     onclick="STM('watchlist',this)"><span class="bi-icon">👁</span><span class="bi-lbl">Watch</span></div>
@@ -503,6 +569,8 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 <!-- ── HOLDINGS ── -->
 <div class="view on" id="view-holdings">
   <div id="alertBanner"></div>
+  <!-- Quick glance goal widget -->
+  <div id="quickGlanceWidget" style="margin-bottom:14px;"></div>
   <div class="kstrip" id="kpiStrip" style="grid-template-columns:repeat(6,1fr)"></div>
   <!-- Income + rebalancing summary bar -->
   <div id="incomeSummaryBar" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;"></div>
@@ -728,6 +796,62 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   </div>
   <div class="macts"><button class="bsec" onclick="CO('goalOvl')">Cancel</button><button class="bpri" onclick="saveGoal()">Save goal</button></div>
 </div></div>
+
+<!-- ── STRATEGY ── -->
+<div class="view" id="view-strategy">
+
+  <div class="strat-header">
+    <div>
+      <div class="strat-title">⚡ Strategy & Rebalancing</div>
+      <div class="strat-sub">AI-powered weekly portfolio review · Powered by Claude</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <div class="pill" id="stratModePill">
+        <button class="on" onclick="setStratMode('balanced',this)">Balanced</button>
+        <button onclick="setStratMode('conservative',this)">Conservative</button>
+        <button onclick="setStratMode('aggressive',this)">Aggressive</button>
+      </div>
+      <button class="strat-gen-btn" onclick="generateStrategy()">
+        <span id="stratBtnIcon">✦</span> <span id="stratBtnTxt">Generate analysis</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- API key setup notice -->
+  <div id="stratApiNotice" style="background:var(--blue-bg);border:1px solid var(--blue);border-radius:var(--r);padding:16px;margin-bottom:16px;display:none;">
+    <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:6px;">🔑 Anthropic API key required</div>
+    <div style="font-size:12px;color:var(--ink2);margin-bottom:10px;">Get a free key at <strong>console.anthropic.com</strong> — load $10 credit, that'll last years at this usage level (~$0.03 per analysis).</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input id="stratApiKeyInp" type="password" placeholder="sk-ant-..." style="flex:1;background:var(--white);border:1px solid var(--line2);border-radius:6px;padding:8px 12px;font-family:var(--mono);font-size:12px;color:var(--ink);">
+      <button class="bpri" onclick="saveStratApiKey()">Save key</button>
+    </div>
+  </div>
+
+  <!-- Last updated bar -->
+  <div id="stratLastUpdated" style="background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:10px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink3);display:none;">
+    <span id="stratTimestamp">Not yet generated</span>
+    <span style="font-family:var(--mono);font-size:10px;">Claude AI · ~$0.03/analysis</span>
+  </div>
+
+  <!-- Loading state -->
+  <div id="stratLoading" style="display:none;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:48px;text-align:center;">
+    <div style="font-size:28px;animation:spin 1s linear infinite;display:inline-block;margin-bottom:14px;">⚡</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:6px;">Analyzing your portfolio…</div>
+    <div style="font-size:12px;color:var(--ink3);">Claude is reviewing all 38 positions, prices, returns, and goals</div>
+  </div>
+
+  <!-- Results container -->
+  <div id="stratResults"></div>
+
+  <!-- Rebalancing section -->
+  <div id="rebalanceSection" style="display:none;">
+    <div class="shead" style="margin:20px 0 14px;">
+      <span class="strat-title" style="font-size:15px;">⚖️ Rebalancing Plan</span>
+    </div>
+    <div id="rebalanceResults"></div>
+  </div>
+
+</div>
 
 <!-- ── WATCHLIST ── -->
 <div class="view" id="view-watchlist">
@@ -1224,6 +1348,7 @@ function ST_stats(p){
 // ── RENDER ALL ────────────────────────────────────────────────────────────────
 function renderAll(){
   renderKPI();
+  renderQuickGlance();
   renderIncomeSummaryBar();
   renderHoldings();
   renderMobileCards();
@@ -1706,6 +1831,229 @@ function renderIncomeSummaryBar(){
     ${driftHtml}
     ${btcHtml}
   `;
+}
+
+// ── QUICK GLANCE WIDGET ──────────────────────────────────────────────────────
+function renderQuickGlance(){
+  const el = document.getElementById('quickGlanceWidget'); if(!el) return;
+  const dc = displayCcy;
+  const totalMkt = positions.reduce((s,p)=>s+DV(ST_stats(p).mktVal||0,p.cy),0);
+  const now = new Date();
+  const thisYear = now.getFullYear().toString();
+  const activeGoal = goals.find(g=>g.type==='portfolio' && g.date.startsWith(thisYear))
+    || goals.find(g=>g.type==='portfolio' && g.date > now.toISOString().slice(0,10));
+  if(!activeGoal){ el.innerHTML=''; return; }
+  const target = activeGoal.target;
+  const start = activeGoal.start || 0;
+  const pct = Math.min(totalMkt / target * 100, 100);
+  const gap = target - totalMkt;
+  const daysLeft = Math.max(0, Math.round((new Date(activeGoal.date) - now) / 86400000));
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000);
+  const pctYear = Math.min(dayOfYear / 365, 1);
+  const expectedNow = start + (target - start) * pctYear;
+  const isAhead = totalMkt >= expectedNow;
+  const statusTxt = pct >= 100 ? '✓ Goal reached!' : isAhead ? '↑ Ahead of pace' : '↓ Behind pace';
+  const statusColor = pct >= 100 ? 'var(--up)' : isAhead ? 'var(--up)' : 'var(--dn)';
+  const fillColor = pct >= 100 ? 'var(--up)' : isAhead ? 'var(--blue)' : 'var(--gold)';
+  el.innerHTML = `
+    <div class="qg-widget">
+      <div class="qg-left">
+        <span class="qg-label">🎯 ${thisYear} Goal</span>
+        <span class="qg-goal">${activeGoal.name}</span>
+        <span style="font-size:11px;color:var(--ink3);margin-top:2px;">${daysLeft} days left · ${fmtK(gap>0?gap:0,dc)} to go</span>
+      </div>
+      <div class="qg-progress-wrap">
+        <div class="qg-bar">
+          <div class="qg-fill" style="width:${pct}%;background:${fillColor};"></div>
+          <div class="qg-pace-marker" style="left:${pctYear*100}%;" title="Time elapsed ${N(pctYear*100,0)}%"></div>
+        </div>
+        <div class="qg-labels">
+          <span>${fmtK(start,dc)}</span>
+          <span style="color:var(--ink2);">Now: <strong>${fmtK(totalMkt,dc)}</strong></span>
+          <span>${fmtK(target,dc)}</span>
+        </div>
+      </div>
+      <div class="qg-right">
+        <span class="qg-pct" style="color:${fillColor}">${N(pct,1)}%</span>
+        <span class="qg-status" style="background:${isAhead?'var(--up-bg)':'var(--gold-bg)'};color:${statusColor}">${statusTxt}</span>
+      </div>
+    </div>`;
+}
+
+// ── STRATEGY & REBALANCING ───────────────────────────────────────────────────
+let stratMode = 'balanced';
+let stratApiKey = localStorage.getItem('craig_strat_key') || '';
+
+function setStratMode(m, el){
+  stratMode = m;
+  document.querySelectorAll('#stratModePill button').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function saveStratApiKey(){
+  const key = document.getElementById('stratApiKeyInp').value.trim();
+  if(!key){ toast('Enter your API key'); return; }
+  stratApiKey = key;
+  localStorage.setItem('craig_strat_key', key);
+  document.getElementById('stratApiNotice').style.display = 'none';
+  toast('✓ API key saved');
+}
+
+function buildPortfolioSummary(){
+  const totalMkt = positions.reduce((s,p)=>s+DV(ST_stats(p).mktVal||0,p.cy),0);
+  const totalPaid = positions.reduce((s,p)=>s+DV(p.qty*p.cost,p.cy),0);
+  const totalDivs = positions.reduce((s,p)=>s+DV(ST_stats(p).divs,p.cy),0);
+  const monthlyInc = positions.reduce((s,p)=>{const st=ST_stats(p);return s+DV(st.mktVal?(st.mktVal*(p.yld||0)/100/12):0,p.cy);},0);
+  const btcPrice = prices['BTC-CAD']?.price || 0;
+  const posSum = positions.map(p=>{
+    const s=ST_stats(p);
+    return `${p.tk}(${p.ac},${p.owner||'Craig'}): qty=${N(p.qty,2)} avg=$${N(p.cost)} price=$${s.price?N(s.price):'N/A'} mktVal=$${s.mktVal?N(s.mktVal,0):'N/A'}${p.cy} navGL=$${s.navGL?N(s.navGL,0):0} divs=$${N(s.divs,0)} yld=${p.yld||0}%`;
+  }).join('\n');
+  const ag = goals.find(g=>g.type==='portfolio'&&g.date>=new Date().toISOString().slice(0,10));
+  const ig = goals.find(g=>g.type==='income'&&g.date>=new Date().toISOString().slice(0,10));
+  return `PORTFOLIO (${new Date().toDateString()}) — Strategy: ${stratMode}
+Total value: $${N(totalMkt,0)} CAD | Paid in: $${N(totalPaid,0)} CAD | Divs received: $${N(totalDivs,0)} CAD
+Monthly income est: $${N(monthlyInc,0)} CAD | BTC: $${N(btcPrice,0)} CAD
+Goal: ${ag?`${ag.name} target $${N(ag.target,0)} by ${ag.date}, at ${N(totalMkt/ag.target*100,1)}%`:'none'}
+Income goal: ${ig?`$${N(ig.target,0)}/mo by ${ig.date}, currently $${N(monthlyInc,0)}/mo`:'none'}
+Allocation targets: Yield ${targets.yield||55}% Index ${targets.index||20}% Growth ${targets.growth||10}% Income ${targets.income||5}% Crypto ${targets.crypto||10}%
+POSITIONS:\n${posSum}`;
+}
+
+async function generateStrategy(){
+  if(!stratApiKey){
+    document.getElementById('stratApiNotice').style.display='block';
+    return;
+  }
+  const btn = document.querySelector('.strat-gen-btn');
+  btn.disabled=true;
+  document.getElementById('stratBtnIcon').textContent='⟳';
+  document.getElementById('stratBtnTxt').textContent='Analyzing…';
+  document.getElementById('stratLoading').style.display='block';
+  document.getElementById('stratResults').innerHTML='';
+  document.getElementById('rebalanceSection').style.display='none';
+
+  const modeInstr = {
+    balanced:'Balanced view of risk and return. Focus on income sustainability while protecting capital.',
+    conservative:'Prioritize capital preservation. Flag high-risk positions. Recommend defensive moves.',
+    aggressive:'Maximize income yield and growth. Accept higher risk for higher returns.'
+  };
+
+  const prompt = `You are a professional Canadian portfolio advisor. Analyze this portfolio and be specific with ticker symbols and dollar amounts.
+
+${buildPortfolioSummary()}
+
+Mode: ${modeInstr[stratMode]}
+
+Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
+{
+  "overall_status": "on_track" | "action_needed" | "needs_attention",
+  "overall_summary": "2-3 paragraph plain English summary",
+  "income_analysis": "1-2 sentences on income sustainability",
+  "btc_signal": "1-2 sentences on BTC vs Soloway framework",
+  "recommendations": [{"ticker":"","action":"hold|buy|trim|watch|sell","reasoning":"2-3 sentences"}],
+  "risk_flags": [{"level":"high|med|low","headline":"","detail":""}],
+  "rebalancing": [{"category":"","current_pct":0,"target_pct":0,"drift":0,"action":"trim|add|hold","suggested_amount_cad":0,"suggested_trades":""}]
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':stratApiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok){ const e=await res.json(); throw new Error(e?.error?.message||'API error '+res.status); }
+    const data = await res.json();
+    const text = data.content[0].text.trim();
+    const match = text.match(/\{[\s\S]*\}/);
+    if(!match) throw new Error('Could not parse AI response');
+    const result = JSON.parse(match[0]);
+    renderStrategyResults(result);
+  } catch(e) {
+    document.getElementById('stratResults').innerHTML=`<div class="strat-section" style="border-color:var(--dn);"><div style="color:var(--dn);font-weight:600;margin-bottom:6px;">⚠ Analysis failed</div><div style="font-size:12px;color:var(--ink2);">${e.message}</div><div style="font-size:11px;color:var(--ink3);margin-top:8px;">Check your API key at console.anthropic.com and ensure you have credits loaded.</div></div>`;
+  } finally {
+    btn.disabled=false;
+    document.getElementById('stratBtnIcon').textContent='✦';
+    document.getElementById('stratBtnTxt').textContent='Regenerate';
+    document.getElementById('stratLoading').style.display='none';
+    const lu=document.getElementById('stratLastUpdated');
+    lu.style.display='flex';
+    document.getElementById('stratTimestamp').textContent=`Last analysis: ${new Date().toLocaleString()}`;
+  }
+}
+
+function renderStrategyResults(r){
+  const statusColors={on_track:'ok',action_needed:'warn',needs_attention:'alert'};
+  const statusLabels={on_track:'✓ On track',action_needed:'Action needed',needs_attention:'Needs attention'};
+  const recHtml=(r.recommendations||[]).map(rec=>`
+    <div class="strat-rec ${rec.action}">
+      <div class="strat-rec-action">${rec.action.toUpperCase()}</div>
+      <div class="strat-rec-tk">${rec.ticker}</div>
+      <div class="strat-rec-body">${rec.reasoning}</div>
+    </div>`).join('');
+  const riskHtml=(r.risk_flags||[]).map(rf=>`
+    <div class="strat-risk">
+      <div class="strat-risk-dot ${rf.level}"></div>
+      <div><div style="font-size:13px;font-weight:600;margin-bottom:3px;">${rf.headline}</div><div style="font-size:12px;color:var(--ink2);">${rf.detail}</div></div>
+    </div>`).join('');
+  document.getElementById('stratResults').innerHTML=`
+    <div class="strat-section">
+      <div class="strat-section-title">📊 Portfolio overview <span class="strat-badge ${statusColors[r.overall_status]||'warn'}">${statusLabels[r.overall_status]||'Review'}</span></div>
+      <div class="strat-body">${(r.overall_summary||'').split('\n').map(p=>p?`<p>${p}</p>`:'').join('')}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div class="strat-section" style="margin-bottom:0;background:var(--gold-bg);border-color:#e8c97a;">
+        <div class="strat-section-title" style="color:var(--gold);">💰 Income analysis</div>
+        <div class="strat-body">${r.income_analysis||''}</div>
+      </div>
+      <div class="strat-section" style="margin-bottom:0;border-color:#f7931a44;">
+        <div class="strat-section-title">₿ BTC signal</div>
+        <div class="strat-body">${r.btc_signal||''}</div>
+      </div>
+    </div>
+    <div class="strat-section">
+      <div class="strat-section-title">📋 Position recommendations</div>
+      <div class="strat-rec-grid">${recHtml}</div>
+    </div>
+    <div class="strat-section">
+      <div class="strat-section-title">⚠️ Risk flags</div>
+      ${riskHtml}
+    </div>
+    <div class="strat-disclaimer">⚠️ <strong>Not financial advice.</strong> AI analysis for informational purposes only. Always validate and consult a financial advisor before acting.</div>`;
+  renderRebalancingPlan(r.rebalancing||[]);
+}
+
+function renderRebalancingPlan(rebalData){
+  if(!rebalData.length){document.getElementById('rebalanceSection').style.display='none';return;}
+  document.getElementById('rebalanceSection').style.display='block';
+  const rows=rebalData.map(r=>{
+    const drift=r.drift||(r.current_pct-r.target_pct);
+    const driftColor=Math.abs(drift)<3?'var(--ink3)':drift>0?'var(--dn)':'var(--up)';
+    return `<div class="rebal-row">
+      <span style="font-weight:500;">${r.category}</span>
+      <div style="background:var(--paper);border-radius:4px;height:6px;overflow:hidden;position:relative;">
+        <div style="height:100%;background:var(--blue);width:${Math.min(r.current_pct,100)}%;border-radius:4px;"></div>
+        <div style="position:absolute;top:0;height:100%;width:2px;background:var(--ink);opacity:.4;left:${Math.min(r.target_pct,100)}%;"></div>
+      </div>
+      <span style="font-family:var(--mono);text-align:right">${N(r.current_pct,1)}%</span>
+      <span style="font-family:var(--mono);text-align:right;color:var(--ink3)">${r.target_pct}%</span>
+      <span style="font-family:var(--mono);font-weight:600;color:${driftColor};text-align:right">${drift>0?'+':''}${N(drift,1)}%</span>
+      <span class="rebal-action-pill ${r.action}">${r.action.toUpperCase()}${r.suggested_amount_cad?` ~${fmtK(r.suggested_amount_cad,'CAD',true)}`:''}</span>
+    </div>`; }).join('');
+  const trades=rebalData.filter(r=>r.suggested_trades).map(r=>`
+    <div style="padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;">
+      <strong style="color:${r.action==='trim'?'var(--gold)':'var(--up)'}">${r.action.toUpperCase()} ${r.category}:</strong>
+      <span style="color:var(--ink2);margin-left:6px;">${r.suggested_trades}</span>
+    </div>`).join('');
+  document.getElementById('rebalanceResults').innerHTML=`
+    <div class="strat-section">
+      <div class="strat-section-title">Category drift vs targets</div>
+      <div class="rebal-row rebal-header" style="padding-bottom:6px;border-bottom:1px solid var(--line2);">
+        <span>Category</span><span>Bar</span><span>Now</span><span>Target</span><span>Drift</span><span>Action</span>
+      </div>${rows}
+    </div>
+    ${trades?`<div class="strat-section"><div class="strat-section-title">Suggested trades</div>${trades}</div>`:''}
+    <div class="strat-disclaimer">💡 Prefer rebalancing inside RRSP/TFSA first to avoid triggering capital gains in your Corp account.</div>`;
 }
 
 // ── GOALS ─────────────────────────────────────────────────────────────────────
