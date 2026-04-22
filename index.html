@@ -1943,35 +1943,44 @@ async function generateStrategy(){
     aggressive:'Maximize income yield and growth. Accept higher risk for higher returns.'
   };
 
-  const prompt = `You are a professional Canadian portfolio advisor. Analyze this portfolio and be specific with ticker symbols and dollar amounts.
+  const prompt = `You are a professional Canadian portfolio advisor. Analyze this portfolio concisely. Be specific with tickers and dollar amounts. Keep each text field to 2-3 sentences maximum.
 
 ${buildPortfolioSummary()}
 
 Mode: ${modeInstr[stratMode]}
 
-Respond ONLY with valid JSON (no markdown, no explanation outside JSON):
+Respond ONLY with valid JSON (no markdown, no text outside JSON). Keep all string values SHORT — max 2-3 sentences each:
 {
-  "overall_status": "on_track" | "action_needed" | "needs_attention",
-  "overall_summary": "2-3 paragraph plain English summary",
-  "income_analysis": "1-2 sentences on income sustainability",
-  "btc_signal": "1-2 sentences on BTC vs Soloway framework",
-  "recommendations": [{"ticker":"","action":"hold|buy|trim|watch|sell","reasoning":"2-3 sentences"}],
-  "risk_flags": [{"level":"high|med|low","headline":"","detail":""}],
-  "rebalancing": [{"category":"","current_pct":0,"target_pct":0,"drift":0,"action":"trim|add|hold","suggested_amount_cad":0,"suggested_trades":""}]
+  "overall_status": "on_track",
+  "overall_summary": "2-3 sentences only",
+  "income_analysis": "1-2 sentences only",
+  "btc_signal": "1-2 sentences only",
+  "recommendations": [{"ticker":"","action":"hold","reasoning":"2 sentences max"}],
+  "risk_flags": [{"level":"high","headline":"short title","detail":"1-2 sentences"}],
+  "rebalancing": [{"category":"","current_pct":0,"target_pct":0,"drift":0,"action":"hold","suggested_amount_cad":0,"suggested_trades":"brief"}]
 }`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':stratApiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:6000,messages:[{role:'user',content:prompt}]})
     });
     if(!res.ok){ const e=await res.json(); throw new Error(e?.error?.message||'API error '+res.status); }
     const data = await res.json();
     const text = data.content[0].text.trim();
-    const match = text.match(/\{[\s\S]*\}/);
-    if(!match) throw new Error('Could not parse AI response');
-    const result = JSON.parse(match[0]);
+    // Find the outermost JSON object
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if(start === -1 || end === -1) throw new Error('No JSON found in response');
+    const jsonStr = text.slice(start, end+1);
+    let result;
+    try { result = JSON.parse(jsonStr); }
+    catch(e) {
+      // Try to fix common JSON issues — truncated arrays
+      const fixed = jsonStr.replace(/,\s*([}\]])/g,'$1').replace(/([{,]\s*)(\w+):/g,'$1"$2":');
+      result = JSON.parse(fixed);
+    }
     renderStrategyResults(result);
   } catch(e) {
     document.getElementById('stratResults').innerHTML=`<div class="strat-section" style="border-color:var(--dn);"><div style="color:var(--dn);font-weight:600;margin-bottom:6px;">⚠ Analysis failed</div><div style="font-size:12px;color:var(--ink2);">${e.message}</div><div style="font-size:11px;color:var(--ink3);margin-top:8px;">Check your API key at console.anthropic.com and ensure you have credits loaded.</div></div>`;
