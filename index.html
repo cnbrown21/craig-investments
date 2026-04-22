@@ -1802,6 +1802,7 @@ function renderGoals() {
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="goal-status ${statusCls}">${statusText}</span>
+          <button class="ra" onclick="openGoalEdit(${g.id})">Edit</button>
           <button class="ra x" onclick="deleteGoal(${g.id})">✕</button>
         </div>
       </div>
@@ -1854,7 +1855,10 @@ function renderGoals() {
           <div class="goal-name">${g.name}</div>
           <div class="goal-meta">Monthly distribution income · Due ${g.date}</div>
         </div>
-        <button class="ra x" onclick="deleteGoal(${g.id})">✕</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="ra" onclick="openGoalEdit(${g.id})">Edit</button>
+          <button class="ra x" onclick="deleteGoal(${g.id})">✕</button>
+        </div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:6px;">
         <span>Current: <strong style="font-family:var(--mono);color:var(--gold)">${fmtK(currentMonthly,dc)}/mo</strong></span>
@@ -1881,6 +1885,21 @@ function openGoalAdd(){
   document.getElementById('g-owner').value = 'All';
   document.getElementById('g-ac').value = 'All';
   document.getElementById('g-date').value = '2026-12-31';
+  document.getElementById('goalOvl').classList.add('on');
+}
+
+function openGoalEdit(id){
+  const g = goals.find(x=>x.id===id); if(!g) return;
+  editGoalId = id;
+  document.getElementById('goalModalTitle').textContent = 'Edit goal';
+  document.getElementById('g-name').value = g.name;
+  document.getElementById('g-type').value = g.type;
+  document.getElementById('g-owner').value = g.owner;
+  document.getElementById('g-ac').value = g.ac;
+  document.getElementById('g-target').value = g.target;
+  document.getElementById('g-date').value = g.date;
+  document.getElementById('g-start').value = g.start||'';
+  document.getElementById('g-notes').value = g.notes||'';
   document.getElementById('goalOvl').classList.add('on');
 }
 
