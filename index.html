@@ -1885,6 +1885,8 @@ let stratMode = 'balanced';
 // Strategy API key — split to avoid secret scanning (reassembled at runtime)
 const _sk = ['sk-ant-api03-', '0BLZrSXOcYhLjBCjdCG1YluIDIzBEAQa4elo8116ttpFMOT3jnK38qGxzoSGU3T8k8yFngCTFIIXuAGc5AZVBA-', '9dgSUAAA'].join('');
 let stratApiKey = localStorage.getItem('craig_strat_key') || _sk;
+// Save to localStorage so it persists
+if(stratApiKey) { try { localStorage.setItem('craig_strat_key', stratApiKey); } catch(e){} }
 
 function setStratMode(m, el){
   stratMode = m;
