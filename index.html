@@ -371,7 +371,32 @@ html.dark .bnav-item.on .bi-icon{filter:brightness(2);}
   .fx-wrap,.utxt{display:none;}
 }
 
-/* ── CHARTS ── */
+/* ── GOALS ── */
+.goal-card{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:20px;margin-bottom:14px;}
+.goal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:12px;}
+.goal-name{font-size:15px;font-weight:600;color:var(--ink);}
+.goal-meta{font-size:11px;color:var(--ink3);margin-top:3px;}
+.goal-status{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;white-space:nowrap;}
+.goal-status.ahead{background:var(--up-bg);color:var(--up);}
+.goal-status.ontrack{background:var(--up-bg);color:var(--up);}
+.goal-status.behind{background:var(--dn-bg);color:var(--dn);}
+.goal-status.complete{background:var(--up-bg);color:var(--up);}
+.goal-progress-wrap{margin-bottom:12px;}
+.goal-progress-bar{height:12px;background:var(--paper);border-radius:6px;overflow:hidden;margin:6px 0;}
+.goal-progress-fill{height:100%;border-radius:6px;transition:width .5s;}
+.goal-progress-labels{display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);color:var(--ink3);}
+.goal-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+.goal-stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:600;margin-bottom:3px;}
+.goal-stat-val{font-family:var(--mono);font-size:14px;font-weight:600;}
+.goal-actions{display:flex;gap:6px;margin-top:12px;}
+.pace-card{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:14px 16px;}
+.pace-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);font-weight:600;margin-bottom:4px;}
+.pace-val{font-family:var(--mono);font-size:16px;font-weight:700;}
+.pace-sub{font-size:10px;color:var(--ink3);margin-top:2px;}
+.income-goal-card{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:20px;margin-bottom:14px;}
+@media(max-width:768px){
+  .goal-stats{grid-template-columns:1fr 1fr;}
+}
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;}
 .chart-grid.full{grid-template-columns:1fr;}
 .chart-card{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:18px;}
@@ -427,6 +452,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div class="htab"     onclick="ST('income',this)">Income</div>
     <div class="htab"     onclick="ST('allocation',this)">Allocation</div>
     <div class="htab"     onclick="ST('performance',this)">Performance</div>
+    <div class="htab"     onclick="ST('goals',this)">Goals 🎯</div>
     <div class="htab"     onclick="ST('realized',this)">Realized</div>
     <div class="htab"     onclick="ST('charts',this)">Charts</div>
     <div class="htab"     onclick="ST('watchlist',this)">Watchlist</div>
@@ -459,12 +485,13 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 
 <!-- BOTTOM NAV -->
 <nav class="bnav">
-  <div class="bnav-inner" style="grid-template-columns:repeat(8,1fr)">
+  <div class="bnav-inner" style="grid-template-columns:repeat(9,1fr)">
     <div class="bnav-item on"  onclick="STM('holdings',this)"><span class="bi-icon">📊</span><span class="bi-lbl">Holdings</span></div>
     <div class="bnav-item"     onclick="STM('accounts',this)"><span class="bi-icon">🏦</span><span class="bi-lbl">Accounts</span></div>
     <div class="bnav-item"     onclick="STM('income',this)"><span class="bi-icon">💰</span><span class="bi-lbl">Income</span></div>
     <div class="bnav-item"     onclick="STM('allocation',this)"><span class="bi-icon">🥧</span><span class="bi-lbl">Alloc</span></div>
     <div class="bnav-item"     onclick="STM('performance',this)"><span class="bi-icon">📈</span><span class="bi-lbl">Perf</span></div>
+    <div class="bnav-item"     onclick="STM('goals',this)"><span class="bi-icon">🎯</span><span class="bi-lbl">Goals</span></div>
     <div class="bnav-item"     onclick="STM('realized',this)"><span class="bi-icon">✅</span><span class="bi-lbl">Realized</span></div>
     <div class="bnav-item"     onclick="STM('charts',this)"><span class="bi-icon">📉</span><span class="bi-lbl">Charts</span></div>
     <div class="bnav-item"     onclick="STM('watchlist',this)"><span class="bi-icon">👁</span><span class="bi-lbl">Watch</span></div>
@@ -652,6 +679,56 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   </div>
 </div>
 
+<!-- ── GOALS ── -->
+<div class="view" id="view-goals">
+
+  <!-- Overall portfolio goals -->
+  <div class="shead" style="margin-bottom:16px;">
+    <span class="stitle">Portfolio Goals</span>
+    <button class="bsm pri" onclick="openGoalAdd()">+ Add goal</button>
+  </div>
+
+  <!-- Pace summary strip -->
+  <div id="goalPaceStrip" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;"></div>
+
+  <!-- Goals list -->
+  <div id="goalsList"></div>
+
+  <!-- Monthly income goals -->
+  <div class="shead" style="margin:24px 0 16px;">
+    <span class="stitle">Income Goals</span>
+  </div>
+  <div id="incomeGoalSection"></div>
+
+</div>
+
+<!-- ── GOAL MODAL ── -->
+<div class="ovl" id="goalOvl"><div class="modal wide">
+  <div class="mtitle"><span id="goalModalTitle">Add goal</span><button class="mclose" onclick="CO('goalOvl')">×</button></div>
+  <div class="fgrid">
+    <div class="fg full"><label>Goal name</label><input id="g-name" placeholder="e.g. Total portfolio $650K by Dec 2026"></div>
+    <div class="fg"><label>Goal type</label>
+      <select id="g-type">
+        <option value="portfolio">Total portfolio value</option>
+        <option value="account">Single account value</option>
+        <option value="income">Monthly income</option>
+      </select>
+    </div>
+    <div class="fg" id="g-acRow">
+      <label>Account</label>
+      <select id="g-ac"><option value="All">All accounts</option><option>RRSP</option><option>TFSA</option><option>Corp</option></select>
+    </div>
+    <div class="fg"><label>Owner</label>
+      <select id="g-owner"><option value="All">Household</option><option value="Craig">Craig</option><option value="Kit">Kit</option></select>
+    </div>
+    <div class="fg"><label>Target amount ($CAD)</label><input type="number" id="g-target" placeholder="e.g. 650000" step="any"></div>
+    <div class="fg"><label>Target date</label><input type="date" id="g-date"></div>
+    <div class="fg"><label>Starting value ($CAD) <span style="color:var(--ink3);font-weight:400">optional — for % progress</span></label><input type="number" id="g-start" placeholder="e.g. 420000" step="any"></div>
+    <div class="fg full"><label>Notes</label><input id="g-notes" placeholder="e.g. Includes contributions + returns"></div>
+  </div>
+  <div class="macts"><button class="bsec" onclick="CO('goalOvl')">Cancel</button><button class="bpri" onclick="saveGoal()">Save goal</button></div>
+</div></div>
+
 <!-- ── WATCHLIST ── -->
 <div class="view" id="view-watchlist">
   <div class="shead" style="margin-bottom:14px;">
@@ -795,10 +872,8 @@ function loadStore() {
 }
 
 function saveStore() {
-  const data = { positions, watchlist, trades, snapshots, targets };
-  // Always save to localStorage first (instant)
+  const data = { positions, watchlist, trades, snapshots, targets, goals };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch(e) {}
-  // Then sync to cloud if configured
   if (syncEnabled) cloudSave(data);
 }
 
@@ -903,7 +978,14 @@ const DEF_WL=[
   {id:103,tk:'BTC-CAD', nm:'Bitcoin CAD',                      cy:'CAD', target:130000, note:'Gareth Soloway framework'},
   {id:104,tk:'VOO',     nm:'Vanguard S&P 500 ETF',             cy:'USD', target:480,    note:'RRSP redeployment candidate'},
 ];
-const DEF_TARGETS={yield:55,index:20,growth:10,income:5,crypto:10};
+const DEF_GOALS = [
+  { id:1, name:'Total household $650K', type:'portfolio', ac:'All', owner:'All', target:650000, start:420000, date:'2026-12-31', notes:'Year 1 milestone' },
+  { id:2, name:'Total household $700K', type:'portfolio', ac:'All', owner:'All', target:700000, start:650000, date:'2027-12-31', notes:'Year 2 milestone' },
+  { id:3, name:'Total household $850K', type:'portfolio', ac:'All', owner:'All', target:850000, start:700000, date:'2028-12-31', notes:'Year 3 milestone' },
+  { id:4, name:'Monthly income $6,000/mo', type:'income', ac:'All', owner:'All', target:6000, start:3000, date:'2026-12-31', notes:'Distribution income target' },
+  { id:5, name:'Monthly income $7,500/mo', type:'income', ac:'All', owner:'All', target:7500, start:6000, date:'2027-12-31', notes:'' },
+];
+const DEF_TARGETS = {yield:55, index:20, growth:10, income:5, crypto:10};
 
 const stored=loadStore();
 
@@ -921,6 +1003,8 @@ let watchlist  = stored?.watchlist  || DEF_WL;
 let trades     = stored?.trades     || [];
 let snapshots  = stored?.snapshots  || [];
 let targets    = stored?.targets    || DEF_TARGETS;
+let goals      = stored?.goals      || DEF_GOALS;
+let nextGoalId = goals.reduce((m,g)=>Math.max(m,g.id),0)+1;
 
 // Seed today's live prices so tracker shows correct values immediately
 const SEED_PRICES = {
@@ -1150,6 +1234,7 @@ function renderAll(){
   renderPerformance();
   renderRealized();
   renderWatchlist();
+  renderGoals();
 }
 
 function fmtK(v, dc) {
@@ -1623,7 +1708,211 @@ function renderIncomeSummaryBar(){
   `;
 }
 
-// ── BUY MORE ─────────────────────────────────────────────────────────────────
+// ── GOALS ─────────────────────────────────────────────────────────────────────
+function getCurrentValue(goal) {
+  const fps = goal.owner === 'All' ? positions : positions.filter(p=>(p.owner||'Craig')===goal.owner);
+  const fps2 = goal.ac === 'All' ? fps : fps.filter(p=>p.ac===goal.ac);
+  if(goal.type === 'income') {
+    return fps2.reduce((s,p)=>{
+      const st=ST_stats(p);
+      return s + DV(st.mktVal?(st.mktVal*(p.yld||0)/100/12):0, p.cy);
+    }, 0);
+  }
+  return fps2.reduce((s,p)=>s+DV(ST_stats(p).mktVal||0,p.cy),0);
+}
+
+function getPaceStatus(goal, current) {
+  const now = new Date();
+  const end = new Date(goal.date);
+  const start = goal.start || 0;
+  const totalGrowthNeeded = goal.target - start;
+  const totalMs = end - new Date(now.getFullYear(), 0, 1);
+  const elapsedMs = now - new Date(now.getFullYear(), 0, 1);
+  const pctTimeElapsed = Math.min(elapsedMs / totalMs, 1);
+  const expectedValue = start + (totalGrowthNeeded * pctTimeElapsed);
+  const pctOfGoal = goal.target > 0 ? (current / goal.target * 100) : 0;
+  const isComplete = current >= goal.target;
+  const isAhead = current >= expectedValue;
+  const gap = goal.target - current;
+  const daysLeft = Math.max(0, Math.round((end - now) / 86400000));
+  const projectedYearEnd = start + ((current - start) / pctTimeElapsed);
+
+  return { pctOfGoal, isComplete, isAhead, gap, daysLeft, expectedValue, projectedYearEnd, pctTimeElapsed };
+}
+
+function renderGoalPaceStrip() {
+  const el = document.getElementById('goalPaceStrip'); if(!el) return;
+  const dc = displayCcy;
+  const totalMkt = positions.reduce((s,p)=>s+DV(ST_stats(p).mktVal||0,p.cy),0);
+  const monthlyInc = positions.reduce((s,p)=>{const st=ST_stats(p);return s+DV(st.mktVal?(st.mktVal*(p.yld||0)/100/12):0,p.cy);},0);
+  const now = new Date();
+  const dayOfYear = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000);
+  const pctYear = dayOfYear / 365;
+
+  // Find active 2026 goal
+  const goal2026 = goals.find(g=>g.date==='2026-12-31'&&g.type==='portfolio');
+  const needed2026 = goal2026 ? goal2026.target - totalMkt : 0;
+  const daysLeft2026 = Math.max(0, Math.round((new Date('2026-12-31') - now) / 86400000));
+
+  el.innerHTML = `
+    <div class="pace-card">
+      <div class="pace-lbl">Current portfolio</div>
+      <div class="pace-val">${fmtK(totalMkt,dc)}</div>
+      <div class="pace-sub">${dc} · all accounts</div>
+    </div>
+    <div class="pace-card">
+      <div class="pace-lbl">Est. monthly income</div>
+      <div class="pace-val" style="color:var(--gold)">${fmtK(monthlyInc,dc)}/mo</div>
+      <div class="pace-sub">${fmtK(monthlyInc*12,dc)}/yr</div>
+    </div>
+    <div class="pace-card">
+      <div class="pace-lbl">${goal2026?'Gap to $650K goal':'2026 progress'}</div>
+      <div class="pace-val" style="color:${needed2026<=0?'var(--up)':'var(--dn)'}">${needed2026<=0?'✓ Goal hit!':fmtK(needed2026,dc)+' to go'}</div>
+      <div class="pace-sub">${daysLeft2026} days left in 2026</div>
+    </div>
+    <div class="pace-card">
+      <div class="pace-lbl">Year elapsed</div>
+      <div class="pace-val">${N(pctYear*100,0)}%</div>
+      <div class="pace-sub">Day ${dayOfYear} of 365</div>
+    </div>
+  `;
+}
+
+function renderGoals() {
+  renderGoalPaceStrip();
+  const el = document.getElementById('goalsList'); if(!el) return;
+  const dc = displayCcy;
+
+  if(!goals.length){ el.innerHTML='<div class="empty">No goals yet — click + Add goal</div>'; return; }
+
+  el.innerHTML = goals.filter(g=>g.type!=='income').map(g => {
+    const current = getCurrentValue(g);
+    const { pctOfGoal, isComplete, isAhead, gap, daysLeft, expectedValue, projectedYearEnd, pctTimeElapsed } = getPaceStatus(g, current);
+    const fillPct = Math.min(pctOfGoal, 100);
+    const fillColor = isComplete ? 'var(--up)' : isAhead ? 'var(--blue)' : pctOfGoal > 80 ? 'var(--gold)' : 'var(--dn)';
+    const statusText = isComplete ? '✓ Complete!' : isAhead ? '↑ Ahead of pace' : '↓ Behind pace';
+    const statusCls = isComplete ? 'complete' : isAhead ? 'ahead' : 'behind';
+    const yearLabel = g.date.slice(0,4);
+
+    return `<div class="goal-card">
+      <div class="goal-header">
+        <div>
+          <div class="goal-name">${g.name}</div>
+          <div class="goal-meta">${g.owner==='All'?'Household':g.owner} · ${g.ac==='All'?'All accounts':g.ac} · Due ${g.date}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="goal-status ${statusCls}">${statusText}</span>
+          <button class="ra x" onclick="deleteGoal(${g.id})">✕</button>
+        </div>
+      </div>
+      <div class="goal-progress-wrap">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:4px;">
+          <span>Current: <strong style="font-family:var(--mono)">${fmtK(current,dc)}</strong></span>
+          <span><strong style="font-family:var(--mono);color:${fillColor}">${N(fillPct,1)}%</strong> of goal</span>
+          <span>Target: <strong style="font-family:var(--mono)">${fmtK(g.target,dc)}</strong></span>
+        </div>
+        <div class="goal-progress-bar">
+          <div class="goal-progress-fill" style="width:${fillPct}%;background:${fillColor};"></div>
+        </div>
+        <!-- Time elapsed marker -->
+        <div style="position:relative;height:6px;margin-top:4px;">
+          <div style="position:absolute;left:${N(pctTimeElapsed*100,1)}%;top:0;width:2px;height:6px;background:var(--ink3);border-radius:1px;" title="Time elapsed ${N(pctTimeElapsed*100,0)}%"></div>
+        </div>
+        <div class="goal-progress-labels">
+          <span>Start: ${fmtK(g.start||0,dc)}</span>
+          <span style="color:var(--ink4);">▲ ${N(pctTimeElapsed*100,0)}% of year elapsed</span>
+          <span>${daysLeft} days left</span>
+        </div>
+      </div>
+      <div class="goal-stats">
+        <div><div class="goal-stat-lbl">Gap remaining</div><div class="goal-stat-val" style="color:${gap<=0?'var(--up)':'var(--dn)'}">${gap<=0?'Done!':fmtK(gap,dc)}</div></div>
+        <div><div class="goal-stat-lbl">Expected now</div><div class="goal-stat-val">${fmtK(expectedValue,dc)}</div></div>
+        <div><div class="goal-stat-lbl">Proj. year-end</div><div class="goal-stat-val" style="color:${projectedYearEnd>=g.target?'var(--up)':'var(--dn)'}">${fmtK(Math.min(projectedYearEnd,g.target*1.5),dc)}</div></div>
+        <div><div class="goal-stat-lbl">Need per month</div><div class="goal-stat-val">${gap>0&&daysLeft>0?fmtK(gap/(daysLeft/30),dc):'—'}</div></div>
+      </div>
+      ${g.notes?`<div style="font-size:11px;color:var(--ink3);margin-top:10px;padding-top:10px;border-top:1px solid var(--line);">📝 ${g.notes}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // Income goals section
+  const incEl = document.getElementById('incomeGoalSection'); if(!incEl) return;
+  const incGoals = goals.filter(g=>g.type==='income');
+  if(!incGoals.length){ incEl.innerHTML=''; return; }
+
+  const currentMonthly = positions.reduce((s,p)=>{
+    const st=ST_stats(p);
+    return s+DV(st.mktVal?(st.mktVal*(p.yld||0)/100/12):0,p.cy);
+  },0);
+
+  incEl.innerHTML = incGoals.map(g => {
+    const { pctOfGoal, isComplete, isAhead, gap, daysLeft } = getPaceStatus(g, currentMonthly);
+    const fillPct = Math.min(pctOfGoal, 100);
+    const fillColor = isComplete?'var(--up)':isAhead?'var(--blue)':'var(--gold)';
+    return `<div class="income-goal-card">
+      <div class="goal-header">
+        <div>
+          <div class="goal-name">${g.name}</div>
+          <div class="goal-meta">Monthly distribution income · Due ${g.date}</div>
+        </div>
+        <button class="ra x" onclick="deleteGoal(${g.id})">✕</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:6px;">
+        <span>Current: <strong style="font-family:var(--mono);color:var(--gold)">${fmtK(currentMonthly,dc)}/mo</strong></span>
+        <span>Target: <strong style="font-family:var(--mono)">${fmtK(g.target,dc)}/mo</strong></span>
+      </div>
+      <div class="goal-progress-bar" style="height:16px;">
+        <div class="goal-progress-fill" style="width:${fillPct}%;background:${fillColor};"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--ink3);">
+        <span>${N(fillPct,1)}% of target</span>
+        <span>${gap>0?fmtK(gap,dc)+'/mo still needed':'✓ Goal reached!'}</span>
+        <span>${daysLeft} days left</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let editGoalId = null;
+function openGoalAdd(){
+  editGoalId = null;
+  document.getElementById('goalModalTitle').textContent = 'Add goal';
+  ['g-name','g-notes','g-target','g-start'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('g-type').value = 'portfolio';
+  document.getElementById('g-owner').value = 'All';
+  document.getElementById('g-ac').value = 'All';
+  document.getElementById('g-date').value = '2026-12-31';
+  document.getElementById('goalOvl').classList.add('on');
+}
+
+function saveGoal(){
+  const name = document.getElementById('g-name').value.trim();
+  const type = document.getElementById('g-type').value;
+  const ac   = document.getElementById('g-ac').value;
+  const owner= document.getElementById('g-owner').value;
+  const target=parseFloat(document.getElementById('g-target').value);
+  const date = document.getElementById('g-date').value;
+  const start= parseFloat(document.getElementById('g-start').value)||0;
+  const notes= document.getElementById('g-notes').value.trim();
+  if(!name||isNaN(target)||!date){ toast('Fill in name, target, and date'); return; }
+  if(editGoalId){
+    Object.assign(goals.find(g=>g.id===editGoalId),{name,type,ac,owner,target,date,start,notes});
+    toast('Goal updated');
+  } else {
+    goals.push({id:nextGoalId++,name,type,ac,owner,target,date,start,notes});
+    toast('Goal added');
+  }
+  CO('goalOvl');
+  saveStore();
+  renderGoals();
+}
+
+function deleteGoal(id){
+  if(!confirm('Remove this goal?')) return;
+  goals = goals.filter(g=>g.id!==id);
+  saveStore();
+  renderGoals();
+  toast('Goal removed');
+}
 let buyId = null;
 
 function openBuyMore(id){
@@ -2255,7 +2544,8 @@ async function init() {
     if (cloudData.trades)     trades     = cloudData.trades;
     if (cloudData.snapshots)  snapshots  = cloudData.snapshots;
     if (cloudData.targets)    targets    = cloudData.targets;
-    try { localStorage.setItem(SK, JSON.stringify({positions,watchlist,trades,snapshots,targets})); } catch(e) {}
+    if (cloudData.goals)      goals      = cloudData.goals;
+    try { localStorage.setItem(SK, JSON.stringify({positions,watchlist,trades,snapshots,targets,goals})); } catch(e) {}
     showSyncStatus('✓ Loaded from cloud');
   }
 
