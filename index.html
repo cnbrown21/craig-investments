@@ -679,6 +679,14 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div class="fg"><label>Alert — drop below cost %</label><input type="number" id="f-alert" placeholder="e.g. 20" step="any"></div>
     <div class="fg"><label>Target price</label><input type="number" id="f-target" placeholder="0.00" step="any"></div>
     <div class="fg full"><label>Notes / thesis</label><textarea id="f-notes" placeholder="Why you own it, stop-loss, thesis…"></textarea></div>
+    <div class="fg full" id="manualPriceRow" style="display:none;">
+      <label>📌 Manual price override <span style="color:var(--ink3);font-weight:400;">(for mutual funds / unlisted assets not covered by price feeds)</span></label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="number" id="f-manualprice" placeholder="e.g. 26.29" step="any" style="flex:1;">
+        <button type="button" class="bpri" style="white-space:nowrap;" onclick="applyManualPrice()">Set price</button>
+        <button type="button" class="bsec" style="white-space:nowrap;" onclick="clearManualPrice()">Clear</button>
+      </div>
+    </div>
   </div>
   <div class="macts"><button class="bsec" onclick="CO('posOvl')">Cancel</button><button class="bpri" onclick="savePos()">Save position</button></div>
 </div></div>
@@ -870,7 +878,7 @@ const DEF=[
   {id:19, tk:'BMNR',   nm:'Bitmine Immersion Technologies Inc',            ac:'RRSP',   cy:'USD', qty:43,      cost:44.92,  yld:0,   src:'manual', alert:0,  target:null,   owner:'Craig', notes:'Small speculative. Review for exit.', dists:[]},
   {id:20, tk:'SHOP',   nm:'Shopify Inc',                                   ac:'Corp',   cy:'CAD', qty:3.8052,  cost:158.00, yld:0,   src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Quality compounder.', dists:[]},
   {id:21, tk:'OXY',    nm:'Occidental Petroleum Corp',                     ac:'TFSA',   cy:'USD', qty:10,      cost:45.70,  yld:1.5, src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Energy hedge. Buffett-held.', dists:[]},
-  {id:22, tk:'ATL789', nm:'TD Investment',                                  ac:'RRSP',   cy:'CAD', qty:830,     cost:19.44,  yld:15,  src:'manual', alert:20, target:null,   owner:'Craig', notes:'', dists:[]},
+  {id:22, tk:'ATL789', nm:'Axiom Balanced Growth Portfolio',              ac:'RRSP',   cy:'CAD', qty:830.269,  cost:19.4364, yld:4,   src:'manual', alert:20, target:null,   owner:'Craig', notes:'Mutual fund — update price manually from TD WebBroker. Current: $26.29/unit Apr 22 2026', dists:[]},
   {id:23, tk:'CSU',    nm:'Constellation Software Inc',                    ac:'Corp',   cy:'CAD', qty:6,       cost:2398.37,yld:0.1, src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Additional CSU lot.', dists:[]},
   {id:24, tk:'SHOP',   nm:'Shopify Inc',                                   ac:'Corp',   cy:'CAD', qty:30,      cost:155.92, yld:0,   src:'auto',   alert:20, target:null,   owner:'Craig', notes:'Additional SHOP lot.', dists:[]},
   {id:25, tk:'HXT',    nm:'Horizons S&P/TSX 60 Index ETF',                 ac:'Corp',   cy:'CAD', qty:65,      cost:83.99,  yld:0,   src:'auto',   alert:15, target:null,   owner:'Craig', notes:'', dists:[]},
@@ -938,11 +946,26 @@ const SEED_PRICES = {
   'VIU':     {price:39.80,  prev:39.60, cy:'CAD'},
   'HXS':     {price:106.50, prev:105.80,cy:'CAD'},
   'VOO':     {price:653.77, prev:648.20, cy:'USD'},
-  'ATL789':  {price:19.44,  prev:19.44, cy:'CAD'},
+  'ATL789':  {price:26.29,  prev:25.80, cy:'CAD'},  // AXIOM BAL GWTH PTF — updated Apr 22 2026
   'KHC':     {price:22.08,  prev:22.21, cy:'USD'},
   'TDMIF':   {price:30.62,  prev:30.50, cy:'CAD'},
 };
 let prices = {...SEED_PRICES};
+// Manual price overrides — survive auto-refresh, stored in localStorage
+let manualPrices = {};
+try { manualPrices = JSON.parse(localStorage.getItem('craig_manualprices')||'{}'); } catch(e) {}
+// Apply manual prices on top of seeds
+Object.entries(manualPrices).forEach(([tk, p]) => { prices[tk] = p; });
+
+function setManualPrice(tk, price, cy) {
+  if(!price || isNaN(price)) return;
+  const prev = prices[tk]?.price || price;
+  prices[tk] = { price: parseFloat(price), prev, cy: cy||'CAD', manual: true };
+  manualPrices[tk] = prices[tk];
+  try { localStorage.setItem('craig_manualprices', JSON.stringify(manualPrices)); } catch(e) {}
+  renderAll();
+  toast(`✓ ${tk} price set to $${price}`);
+}
 let autoDivs={};
 let editId=null, distId=null, notesId=null, nextId=400;
 let displayCcy = 'CAD'; // Always default to CAD — change via toggle if needed
@@ -987,6 +1010,7 @@ async function fetchBTC(){
 }
 
 async function fetchFinnhub(tk, sym){
+  if(manualPrices[tk]) return true; // manually set — skip API
   try {
     const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${FINNHUB_KEY}`, {
       method: 'GET',
@@ -1029,6 +1053,7 @@ async function fetchFinnhub(tk, sym){
 }
 
 async function fetchViaProxy(tk, sym){
+  if(manualPrices[tk]) return true; // manually set — skip API
   if(PROXY_URL === 'YOUR_NETLIFY_URL') return false;
   try {
     const r = await fetch(`${PROXY_URL}?symbols=${encodeURIComponent(sym)}`, {
@@ -1831,11 +1856,12 @@ document.querySelectorAll('.ovl').forEach(o=>o.addEventListener('click',function
 function openAdd(){
   editId=null;
   document.getElementById('posTitle').textContent='Add position';
-  ['f-tk','f-nm','f-qty','f-cost','f-yld','f-alert','f-target','f-notes'].forEach(id=>document.getElementById(id).value='');
+  ['f-tk','f-nm','f-qty','f-cost','f-yld','f-alert','f-target','f-notes','f-manualprice'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-ac').value='RRSP';
   document.getElementById('f-cy').value='CAD';
   document.getElementById('f-src').value='auto';
   document.getElementById('f-owner').value = ownerFilter === 'Kit' ? 'Kit' : 'Craig';
+  document.getElementById('manualPriceRow').style.display='none';
   document.getElementById('posOvl').classList.add('on');
 }
 function openEdit(id){
@@ -1854,7 +1880,32 @@ function openEdit(id){
   document.getElementById('f-alert').value=p.alert||'';
   document.getElementById('f-target').value=p.target||'';
   document.getElementById('f-notes').value=p.notes||'';
+  // Show manual price section in edit mode
+  document.getElementById('manualPriceRow').style.display='block';
+  const mp = manualPrices[p.tk];
+  document.getElementById('f-manualprice').value = mp ? mp.price : (prices[p.tk]?.price||'');
   document.getElementById('posOvl').classList.add('on');
+}
+
+function applyManualPrice(){
+  const p = editId ? positions.find(x=>x.id===editId) : null;
+  if(!p){ toast('Save the position first, then set manual price'); return; }
+  const price = parseFloat(document.getElementById('f-manualprice').value);
+  if(!price || isNaN(price)){ toast('Enter a valid price'); return; }
+  setManualPrice(p.tk, price, p.cy);
+}
+
+function clearManualPrice(){
+  const p = editId ? positions.find(x=>x.id===editId) : null;
+  if(!p) return;
+  delete manualPrices[p.tk];
+  try { localStorage.setItem('craig_manualprices', JSON.stringify(manualPrices)); } catch(e) {}
+  // Restore seed price if available
+  if(SEED_PRICES[p.tk]) prices[p.tk] = SEED_PRICES[p.tk];
+  else delete prices[p.tk];
+  document.getElementById('f-manualprice').value = '';
+  renderAll();
+  toast(`✓ Manual price cleared for ${p.tk} — will use live feed`);
 }
 function savePos(){
   const tk=document.getElementById('f-tk').value.trim().toUpperCase();
@@ -2234,4 +2285,3 @@ init();
 </script>
 </body>
 </html>
-
