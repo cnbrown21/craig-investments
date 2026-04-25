@@ -504,7 +504,83 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   .mob-card:not(.active){display:none;}
   .mob-card.active{display:flex;}
 }
-</style>
+/* ── RESEARCH TAB ── */
+.res-wrap{max-width:1100px;}
+.res-topbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.res-search-wrap{display:flex;flex:1;max-width:460px;}
+.res-search-wrap input{flex:1;background:var(--white);border:1px solid var(--line2);border-radius:var(--r) 0 0 var(--r);padding:9px 13px;color:var(--ink);font-size:13px;font-family:var(--font);outline:none;}
+.res-search-wrap input:focus{border-color:var(--blue);}
+.res-search-wrap button{background:var(--blue);color:#fff;border:none;border-radius:0 var(--r) var(--r) 0;padding:9px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);}
+.res-search-wrap button:hover{opacity:.85;}
+.res-chips{display:flex;gap:5px;flex-wrap:wrap;}
+.res-chip{background:var(--paper);border:1px solid var(--line2);color:var(--ink2);border-radius:4px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--mono);}
+.res-chip:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.res-empty{text-align:center;padding:80px 20px;color:var(--ink3);}
+.re-icon{font-size:2.5rem;margin-bottom:12px;opacity:.4;}
+.res-hero{background:var(--white);border:1px solid var(--line2);border-top:3px solid var(--blue);border-radius:var(--r);padding:18px 20px;margin-bottom:4px;}
+.res-hero-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:8px;}
+.res-tk{font-family:var(--mono);font-size:1.7rem;font-weight:600;}
+.res-name{font-size:13px;color:var(--ink3);margin-top:3px;}
+.res-badges{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap;}
+.res-price-block{text-align:right;}
+.res-price{font-family:var(--mono);font-size:1.9rem;font-weight:600;line-height:1;}
+.res-price.up{color:var(--up);}.res-price.dn{color:var(--dn);}
+.res-chg{font-size:12px;font-weight:600;margin-top:4px;font-family:var(--mono);}
+.res-chg.up{color:var(--up);}.res-chg.dn{color:var(--dn);}
+.res-asof{font-size:10px;color:var(--ink3);margin-top:3px;}
+.res-tabbar{background:var(--white);border:1px solid var(--line2);border-bottom:none;border-radius:var(--r) var(--r) 0 0;display:flex;overflow-x:auto;margin-top:14px;}
+.res-tab{padding:11px 18px;font-size:11px;font-weight:600;color:var(--ink3);cursor:pointer;border-bottom:3px solid transparent;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.res-tab:hover{color:var(--ink2);}
+.res-tab.on{color:var(--blue);border-bottom-color:var(--blue);}
+.res-panels{background:var(--white);border:1px solid var(--line2);border-top:none;border-radius:0 0 var(--r) var(--r);padding:18px;}
+.res-panel{display:none;}
+.res-panel.on{display:block;}
+.res-grid{display:grid;grid-template-columns:1fr 280px;gap:14px;align-items:start;}
+@media(max-width:768px){.res-grid{grid-template-columns:1fr;}}
+.res-stbl{width:100%;border-collapse:collapse;}
+.res-stbl tr:nth-child(even) td{background:var(--paper);}
+.res-stbl td{padding:6px 10px;border-bottom:1px solid var(--line);font-size:12px;}
+.res-stbl td:first-child{color:var(--ink3);font-size:11px;width:50%;}
+.res-stbl td:last-child{font-weight:600;font-family:var(--mono);text-align:right;color:var(--ink);}
+.res-stbl td:last-child.good{color:var(--up);}
+.res-stbl td:last-child.bad{color:var(--dn);}
+.res-prose{font-size:13px;line-height:1.75;color:var(--ink2);}
+.res-strategy{background:var(--paper);border-left:3px solid var(--blue);padding:9px 13px;border-radius:0 var(--r) var(--r) 0;font-size:12px;color:var(--ink2);line-height:1.6;margin-top:10px;}
+.res-card-box{background:var(--white);border:1px solid var(--line2);border-radius:var(--r);margin-bottom:12px;}
+.res-card-hdr2{padding:7px 13px;background:var(--paper);border-bottom:1px solid var(--line);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);}
+.res-card-pad{padding:13px;}
+.res-consensus{display:inline-block;font-family:var(--mono);font-size:1rem;font-weight:600;padding:5px 16px;border-radius:var(--r);margin-bottom:12px;}
+.res-consensus.buy{background:var(--up-bg);color:var(--up);}
+.res-consensus.hold{background:var(--gold-bg);color:var(--gold);}
+.res-consensus.sell{background:var(--dn-bg);color:var(--dn);}
+.res-ratingrow{display:flex;align-items:center;gap:9px;margin-bottom:6px;}
+.res-rl{font-size:11px;font-weight:600;width:30px;}
+.res-rl.buy{color:var(--up);}.res-rl.hold{color:var(--gold);}.res-rl.sell{color:var(--dn);}
+.res-rtrack{flex:1;height:7px;background:var(--paper);border-radius:3px;overflow:hidden;border:1px solid var(--line);}
+.res-rfill{height:100%;border-radius:3px;}
+.res-rfill.buy{background:var(--up);}.res-rfill.hold{background:var(--gold);}.res-rfill.sell{background:var(--dn);}
+.res-rn{font-size:11px;color:var(--ink3);width:30px;text-align:right;font-family:var(--mono);}
+.res-verdict{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:0 var(--r) var(--r) 0;padding:11px 13px;font-size:12px;line-height:1.7;color:var(--ink2);margin-top:12px;}
+.res-ni{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);}
+.res-ni:last-child{border-bottom:none;}
+.res-nn{font-family:var(--mono);font-size:1.1rem;color:var(--line2);min-width:22px;padding-top:1px;}
+.res-nh{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.4;}
+.res-ns{font-size:11px;color:var(--ink2);line-height:1.6;margin-bottom:4px;}
+.res-nm{font-size:10px;color:var(--ink3);font-family:var(--mono);}
+.res-dtbl{width:100%;border-collapse:collapse;}
+.res-dtbl th{background:var(--paper);padding:7px 10px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);border-bottom:1px solid var(--line);text-align:left;}
+.res-dtbl td{padding:6px 10px;border-bottom:1px solid var(--line);font-size:12px;}
+.res-dtbl tr:nth-child(even) td{background:var(--paper);}
+.res-dtbl td:not(:first-child){font-family:var(--mono);}
+.res-da{color:var(--up);font-weight:600;}
+.res-tv-wrap{height:420px;border-radius:var(--r);overflow:hidden;background:var(--paper);border:1px solid var(--line);margin-bottom:12px;}
+.res-loading{text-align:center;padding:40px;color:var(--ink3);}
+.res-ldots{display:flex;justify-content:center;gap:5px;margin-bottom:10px;}
+.res-ldot{width:7px;height:7px;background:var(--blue);border-radius:50%;animation:res-pulse 1.2s ease-in-out infinite;opacity:.3;}
+.res-ldot:nth-child(2){animation-delay:.2s;}
+.res-ldot:nth-child(3){animation-delay:.4s;}
+@keyframes res-pulse{0%,100%{opacity:.2;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
+.res-err{background:var(--dn-bg);border:1px solid rgba(192,57,43,.2);border-radius:var(--r);padding:12px 14px;color:var(--dn);font-size:12px;margin-bottom:12px;}</style>
 </head>
 <body>
 
@@ -520,7 +596,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div class="htab"     onclick="ST('strategy',this)">Strategy ⚡</div>
     <div class="htab"     onclick="ST('realized',this)">Realized</div>
     <div class="htab"     onclick="ST('charts',this)">Charts</div>
-    <div class="htab"     onclick="ST('watchlist',this)">Watchlist</div>
+    <div class="htab"     onclick="ST('watchlist',this)">Watchlist</div><div class="htab"     onclick="ST('research',this)">Research &#128269;</div>
   </nav>
   <div class="hright">
     <span class="utxt" id="utxt">—</span>
@@ -550,7 +626,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 
 <!-- BOTTOM NAV -->
 <nav class="bnav">
-  <div class="bnav-inner" style="grid-template-columns:repeat(10,1fr)">
+  <div class="bnav-inner" style="grid-template-columns:repeat(11,1fr)">
     <div class="bnav-item on"  onclick="STM('holdings',this)"><span class="bi-icon">📊</span><span class="bi-lbl">Holdings</span></div>
     <div class="bnav-item"     onclick="STM('accounts',this)"><span class="bi-icon">🏦</span><span class="bi-lbl">Accounts</span></div>
     <div class="bnav-item"     onclick="STM('income',this)"><span class="bi-icon">💰</span><span class="bi-lbl">Income</span></div>
@@ -560,7 +636,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div class="bnav-item"     onclick="STM('strategy',this)"><span class="bi-icon">⚡</span><span class="bi-lbl">Strategy</span></div>
     <div class="bnav-item"     onclick="STM('realized',this)"><span class="bi-icon">✅</span><span class="bi-lbl">Realized</span></div>
     <div class="bnav-item"     onclick="STM('charts',this)"><span class="bi-icon">📉</span><span class="bi-lbl">Charts</span></div>
-    <div class="bnav-item"     onclick="STM('watchlist',this)"><span class="bi-icon">👁</span><span class="bi-lbl">Watch</span></div>
+    <div class="bnav-item"     onclick="STM('watchlist',this)"><span class="bi-icon">👁</span><span class="bi-lbl">Watch</span></div><div class="bnav-item"     onclick="STM('research',this)"><span class="bi-icon">&#128269;</span><span class="bi-lbl">Research</span></div>
   </div>
 </nav>
 
@@ -862,7 +938,54 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
   <div class="wlgrid" id="wlGrid"></div>
 </div>
 
-</div><!-- /main -->
+<!-- ── RESEARCH ── -->
+<div class="view" id="view-research">
+<div class="res-wrap">
+  <div class="res-topbar">
+    <div class="res-search-wrap">
+      <input id="res-ticker-input" type="text" placeholder="Symbol or company name… (e.g. HHIS, MSTY, NVDA)" autocomplete="off" />
+      <button onclick="resDoSearch()">Search</button>
+    </div>
+    <div class="res-chips">
+      <span class="res-chip" onclick="resQuickSearch('MSTY')">MSTY</span>
+      <span class="res-chip" onclick="resQuickSearch('HHIS')">HHIS</span>
+      <span class="res-chip" onclick="resQuickSearch('HDIV')">HDIV</span>
+      <span class="res-chip" onclick="resQuickSearch('VTV')">VTV</span>
+      <span class="res-chip" onclick="resQuickSearch('SCHD')">SCHD</span>
+      <span class="res-chip" onclick="resQuickSearch('VFV')">VFV</span>
+      <span class="res-chip" onclick="resQuickSearch('QQCL')">QQCL</span>
+      <span class="res-chip" onclick="resQuickSearch('CSU')">CSU</span>
+      <span class="res-chip" onclick="resQuickSearch('NVDA')">NVDA</span>
+      <span class="res-chip" onclick="resQuickSearch('BTC')">BTC</span>
+      <span class="res-chip" onclick="resQuickSearch('MSTE')">MSTE</span>
+      <span class="res-chip" onclick="resQuickSearch('BIGY')">BIGY</span>
+      <span class="res-chip" onclick="resQuickSearch('MSTR')">MSTR</span>
+      <span class="res-chip" onclick="resQuickSearch('SHOP')">SHOP</span>
+    </div>
+  </div>
+  <div class="res-empty" id="res-empty-state">
+    <div class="re-icon">📈</div>
+    <p>Search any stock, ETF, or crypto — or click a holding above<br><span style="font-size:11px;opacity:.6;">Powered by Claude AI with web search · ~10 sec</span></p>
+  </div>
+  <div id="res-results" style="display:none">
+    <div id="res-ticker-header"></div>
+    <div class="res-tabbar" id="res-tabbar">
+      <div class="res-tab on" onclick="resSwitchTab('overview')">Summary</div>
+      <div class="res-tab" onclick="resSwitchTab('financials')">Key Data</div>
+      <div class="res-tab" onclick="resSwitchTab('analyst')">Analyst Ratings</div>
+      <div class="res-tab" onclick="resSwitchTab('dividends')">Dividends</div>
+      <div class="res-tab" onclick="resSwitchTab('news')">News</div>
+    </div>
+    <div class="res-panels">
+      <div id="res-panel-overview" class="res-panel on"></div>
+      <div id="res-panel-financials" class="res-panel"></div>
+      <div id="res-panel-analyst" class="res-panel"></div>
+      <div id="res-panel-dividends" class="res-panel"></div>
+      <div id="res-panel-news" class="res-panel"></div>
+    </div>
+  </div>
+</div>
+</div></div><!-- /main -->
 
 <!-- ── POSITION MODAL ── -->
 <div class="ovl" id="posOvl"><div class="modal wide">
@@ -2952,6 +3075,102 @@ async function init() {
 }
 
 init();
-</script>
+// ── RESEARCH TAB ────────────────────────────────────────────────────────────
+const RES_API_KEY = ['sk-ant-api03-8Y2DPA0wvFFhvaTMQJ-tREwyXykvEVCGKXAi0juya7CeS','rXx777voapfbZYZXi3RddRMR21PByOELkYT0GiEIQ-0b4A3QAA'].join('');
+
+(function(){
+  function resInitInput(){
+    const inp = document.getElementById('res-ticker-input');
+    if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter') resDoSearch(); });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', resInitInput);
+  else resInitInput();
+})();
+
+function resQuickSearch(tk){ document.getElementById('res-ticker-input').value=tk; resDoSearch(); }
+
+function resSwitchTab(name){
+  const names=['overview','financials','analyst','dividends','news'];
+  document.querySelectorAll('#res-tabbar .res-tab').forEach((t,i)=>t.classList.toggle('on',names[i]===name));
+  document.querySelectorAll('.res-panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById('res-panel-'+name).classList.add('on');
+}
+
+function resTVSymbol(ticker, exchange){
+  const t = ticker.replace('.TO','').replace(':CA','').replace('.CA','');
+  const tsxTickers = ['HHIS','HDIV','QQCL','VFV','XIC','BIGY','CLSA','MSTE'];
+  if(exchange && (exchange.includes('TSX')||exchange.includes('NEO'))) return 'TSX:'+t;
+  if(tsxTickers.includes(t)) return 'TSX:'+t;
+  if(ticker.includes('.TO')||ticker.includes(':CA')) return 'TSX:'+t;
+  if(ticker==='BTC'||ticker==='BTC-CAD') return 'BINANCE:BTCUSDT';
+  return t;
+}
+
+function resBuildTV(symbol){
+  const id = 'res_tv_'+Date.now();
+  setTimeout(function(){
+    var el = document.getElementById(id);
+    if(el && typeof TradingView !== 'undefined'){
+      new TradingView.widget({autosize:true,symbol:symbol,interval:'D',timezone:'America/Toronto',theme:document.documentElement.classList.contains('dark')?'dark':'light',style:'1',locale:'en',enable_publishing:false,withdateranges:true,range:'12M',hide_side_toolbar:false,allow_symbol_change:true,container_id:id});
+    }
+  }, 500);
+  return '<div class="res-tv-wrap"><script src="https://s3.tradingview.com/tv.js"><\/script><div id="'+id+'" style="height:420px"></div></div>';
+}
+
+async function resDoSearch(){
+  const raw = document.getElementById('res-ticker-input').value.trim();
+  if(!raw) return;
+  const ticker = raw.toUpperCase();
+  document.getElementById('res-empty-state').style.display='none';
+  document.getElementById('res-results').style.display='block';
+  resSetLoading(ticker);
+  try {
+    const prompt = 'Research "'+ticker+'" and return ONLY valid JSON (no markdown, no backticks). Structure: {"ticker":"'+ticker+'","name":"full name","price":"current price","currency":"USD or CAD","change":"+1.24%","changeDir":"up or down","type":"ETF or Stock or Crypto","exchange":"TSX or NYSE or NASDAQ","overview":{"description":"2-3 sentence summary","strategy":"investment approach","inception":"year","aum":"e.g. $1.53B","mer":"e.g. 1.85%","yield":"e.g. 27.41%","frequency":"Monthly or Quarterly","risk":"Low or Medium or High","nav":"nav price"},"keydata":{"pe":"or N/A","pb":"or N/A","eps":"or N/A","revenue":"or N/A","debtEquity":"or N/A","roe":"or N/A","52wHigh":"price","52wLow":"price","avgVolume":"e.g. 549725","beta":"number","marketCap":"or AUM","expenseRatio":"% or N/A","divRate":"$ annual","divFreq":"Monthly or Quarterly"},"analyst":{"consensus":"Buy or Hold or Sell","targetPrice":"price","buyPct":65,"holdPct":25,"sellPct":10,"numAnalysts":12,"verdict":"2-3 sentences"},"dividends":{"currentYield":"e.g. 27.41%","annualRate":"$ per unit","frequency":"Monthly","lastExDiv":"date","lastPayDate":"date","history":[{"period":"Apr 2026","amount":"0.26","type":"Regular"},{"period":"Mar 2026","amount":"0.26","type":"Regular"},{"period":"Feb 2026","amount":"0.26","type":"Regular"},{"period":"Jan 2026","amount":"0.26","type":"Regular"},{"period":"Dec 2025","amount":"0.26","type":"Regular"},{"period":"Nov 2025","amount":"0.26","type":"Regular"},{"period":"Oct 2025","amount":"0.26","type":"Regular"},{"period":"Sep 2025","amount":"0.26","type":"Regular"},{"period":"Aug 2025","amount":"0.26","type":"Regular"},{"period":"Jul 2025","amount":"0.26","type":"Regular"},{"period":"Jun 2025","amount":"0.26","type":"Regular"},{"period":"May 2025","amount":"0.26","type":"Regular"}]},"news":[{"headline":"...","summary":"...","date":"..."},{"headline":"...","summary":"...","date":"..."},{"headline":"...","summary":"...","date":"..."}]} Use current accurate data. Canadian ETFs use CAD. Fill real dividend history.';
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':RES_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:2000,tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    let text='';
+    for(const b of data.content||[]){if(b.type==='text') text+=b.text;}
+    const s=text.indexOf('{'),e=text.lastIndexOf('}');
+    if(s===-1) throw new Error('No data');
+    resRenderAll(JSON.parse(text.slice(s,e+1)));
+  } catch(err){
+    document.getElementById('res-ticker-header').innerHTML='<div class="res-err">Could not load data for "'+ticker+'". Try again.</div>';
+    ['overview','financials','analyst','dividends','news'].forEach(function(p){document.getElementById('res-panel-'+p).innerHTML='';});
+  }
+}
+
+function resSetLoading(ticker){
+  var ld='<div class="res-loading"><div class="res-ldots"><div class="res-ldot"></div><div class="res-ldot"></div><div class="res-ldot"></div></div><p>Researching <strong>'+ticker+'</strong>... (~10 sec)</p></div>';
+  document.getElementById('res-ticker-header').innerHTML=ld;
+  ['overview','financials','analyst','dividends','news'].forEach(function(p){document.getElementById('res-panel-'+p).innerHTML='<div class="res-loading"><div class="res-ldots"><div class="res-ldot"></div><div class="res-ldot"></div><div class="res-ldot"></div></div></div>';});
+}
+
+function resRenderAll(d){
+  var isUp=d.changeDir!=='down';
+  var cur=d.currency==='CAD'?'C$':'$';
+  var sym=resTVSymbol(d.ticker,d.exchange);
+  var o=d.overview||{}, kd=d.keydata||{};
+  document.getElementById('res-ticker-header').innerHTML='<div class="res-hero"><div class="res-hero-top"><div><div class="res-tk">'+d.ticker+'</div><div class="res-name">'+d.name+'</div><div class="res-badges">'+(d.exchange?'<span class="badge" style="background:var(--blue-bg);color:var(--blue)">'+d.exchange+'</span>':'')+(d.type?'<span class="badge" style="background:var(--paper);color:var(--ink3)">'+d.type+'</span>':'')+(d.currency?'<span class="badge" style="background:var(--paper);color:var(--ink3)">'+d.currency+'</span>':'')+'</div></div><div class="res-price-block"><div class="res-price '+(isUp?'up':'dn')+'">'+cur+d.price+'</div><div class="res-chg '+(isUp?'up':'dn')+'">'+(isUp?'▲':'▼')+' '+d.change+'</div><div class="res-asof">As of today</div></div></div></div>';
+  document.getElementById('res-panel-overview').innerHTML='<div class="res-grid"><div>'+resBuildTV(sym)+'<div class="res-card-box"><div class="res-card-hdr2">About '+d.ticker+'</div><div class="res-card-pad"><p class="res-prose">'+(o.description||'—')+'</p>'+(o.strategy?'<div class="res-strategy"><strong>Strategy:</strong> '+o.strategy+'</div>':'')+'</div></div></div><div><div class="res-card-box"><div class="res-card-hdr2">Quick Stats</div><div style="padding:0"><table class="res-stbl">'+resSR('Price',cur+d.price)+resSR('Change Today',d.change,isUp?'good':'bad')+resSR('Yield',o.yield,'good')+resSR('Div Frequency',o.frequency)+resSR('52W High',kd['52wHigh']?cur+kd['52wHigh']:null)+resSR('52W Low',kd['52wLow']?cur+kd['52wLow']:null)+resSR('Avg Volume',kd.avgVolume)+resSR('MER',o.mer||kd.expenseRatio)+resSR('AUM',o.aum||kd.marketCap)+resSR('Risk',o.risk)+resSR('Inception',o.inception)+'</table></div></div></div></div>';
+  document.getElementById('res-panel-financials').innerHTML='<div class="res-grid"><div><div class="res-card-box"><div class="res-card-hdr2">Valuation</div><div style="padding:0"><table class="res-stbl">'+resSR('P/E',kd.pe)+resSR('P/B',kd.pb)+resSR('EPS',kd.eps)+resSR('Revenue/AUM',kd.revenue||kd.marketCap)+resSR('Debt/Equity',kd.debtEquity)+resSR('ROE',kd.roe,'good')+resSR('Beta',kd.beta)+resSR('Expense Ratio',kd.expenseRatio||o.mer)+'</table></div></div><div class="res-card-box"><div class="res-card-hdr2">Trading</div><div style="padding:0"><table class="res-stbl">'+resSR('52W High',kd['52wHigh']?cur+kd['52wHigh']:null)+resSR('52W Low',kd['52wLow']?cur+kd['52wLow']:null)+resSR('Avg Volume',kd.avgVolume)+resSR('Market Cap/AUM',kd.marketCap||o.aum)+'</table></div></div></div><div><div class="res-card-box"><div class="res-card-hdr2">Income</div><div style="padding:0"><table class="res-stbl">'+resSR('Yield',(d.dividends&&d.dividends.currentYield)||o.yield,'good')+resSR('Annual Rate',d.dividends&&d.dividends.annualRate?cur+d.dividends.annualRate:null)+resSR('Frequency',(d.dividends&&d.dividends.frequency)||o.frequency)+resSR('Last Ex-Div',d.dividends&&d.dividends.lastExDiv)+resSR('Last Pay',d.dividends&&d.dividends.lastPayDate)+'</table></div></div></div></div>';
+  var a=d.analyst||{};
+  var buy=a.buyPct||0,hold=a.holdPct||0,sell=a.sellPct||0;
+  var cCls=a.consensus==='Buy'?'buy':a.consensus==='Sell'?'sell':'hold';
+  document.getElementById('res-panel-analyst').innerHTML='<div class="res-grid"><div><div class="res-card-box"><div class="res-card-hdr2">Consensus · '+(a.numAnalysts||'?')+' Analysts</div><div class="res-card-pad"><div class="res-consensus '+cCls+'">'+(a.consensus||'N/A')+'</div>'+(a.targetPrice?'<div style="font-size:12px;color:var(--ink3);margin-bottom:14px">Avg Target: <strong style="color:var(--ink);font-family:var(--mono)">'+cur+a.targetPrice+'</strong></div>':'')+'<div class="res-ratingrow"><span class="res-rl buy">Buy</span><div class="res-rtrack"><div class="res-rfill buy" style="width:'+buy+'%"></div></div><span class="res-rn">'+buy+'%</span></div><div class="res-ratingrow"><span class="res-rl hold">Hold</span><div class="res-rtrack"><div class="res-rfill hold" style="width:'+hold+'%"></div></div><span class="res-rn">'+hold+'%</span></div><div class="res-ratingrow"><span class="res-rl sell">Sell</span><div class="res-rtrack"><div class="res-rfill sell" style="width:'+sell+'%"></div></div><span class="res-rn">'+sell+'%</span></div><div class="res-verdict">'+(a.verdict||'—')+'</div></div></div></div><div><div class="res-card-box"><div class="res-card-hdr2">Breakdown</div><div style="padding:0"><table class="res-stbl">'+resSR('Consensus',a.consensus)+resSR('Analysts',String(a.numAnalysts||'—'))+resSR('Buy',buy+'%','good')+resSR('Hold',hold+'%')+resSR('Sell',sell+'%',sell>30?'bad':'')+resSR('Avg Target',cur+(a.targetPrice||'—'))+'</table></div></div></div></div>';
+  var dv=d.dividends||{}, hist=dv.history||[];
+  document.getElementById('res-panel-dividends').innerHTML='<div class="res-grid"><div><div class="res-card-box"><div class="res-card-hdr2">Distribution History</div><div style="padding:0"><table class="res-dtbl"><thead><tr><th>Period</th><th>Amount</th><th>Type</th></tr></thead><tbody>'+(hist.length?hist.map(function(h){return'<tr><td>'+h.period+'</td><td class="res-da">'+cur+h.amount+'</td><td>'+(h.type||'Regular')+'</td></tr>';}).join(''):'<tr><td colspan="3" style="padding:14px;text-align:center;color:var(--ink3)">No history available</td></tr>')+'</tbody></table></div></div></div><div><div class="res-card-box"><div class="res-card-hdr2">Summary</div><div style="padding:0"><table class="res-stbl">'+resSR('Yield',dv.currentYield||o.yield,'good')+resSR('Annual Rate',dv.annualRate?cur+dv.annualRate:null)+resSR('Frequency',dv.frequency||o.frequency)+resSR('Last Ex-Div',dv.lastExDiv)+resSR('Last Pay',dv.lastPayDate)+'</table></div></div></div></div>';
+  var news=d.news||[];
+  document.getElementById('res-panel-news').innerHTML='<div class="res-grid"><div><div class="res-card-box"><div class="res-card-hdr2">Recent News</div><div class="res-card-pad">'+(news.length?news.map(function(n,i){return'<div class="res-ni"><div class="res-nn">0'+(i+1)+'</div><div><div class="res-nh">'+n.headline+'</div><div class="res-ns">'+n.summary+'</div><div class="res-nm">'+n.date+'</div></div></div>';}).join(''):'<p class="res-prose">No recent news.</p>')+'</div></div></div><div><div class="res-card-box"><div class="res-card-hdr2">Snapshot</div><div style="padding:0"><table class="res-stbl">'+resSR('Price',cur+d.price)+resSR('Change',d.change,isUp?'good':'bad')+resSR('Yield',o.yield,'good')+resSR('Type',d.type)+resSR('Exchange',d.exchange)+'</table></div></div></div></div>';
+}
+
+function resSR(label,val,cls){
+  if(!val||val==='N/A'||val==='n/a'||val==='null'||val==='undefined'||val==='—') return '';
+  return '<tr><td>'+label+'</td><td class="'+(cls||'')+'">'+val+'</td></tr>';
+}
+// ── END RESEARCH TAB ─────────────────────────────────────────────────────────</script>
 </body>
 </html>
