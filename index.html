@@ -580,7 +580,37 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 .res-ldot:nth-child(2){animation-delay:.2s;}
 .res-ldot:nth-child(3){animation-delay:.4s;}
 @keyframes res-pulse{0%,100%{opacity:.2;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-.res-err{background:var(--dn-bg);border:1px solid rgba(192,57,43,.2);border-radius:var(--r);padding:12px 14px;color:var(--dn);font-size:12px;margin-bottom:12px;}</style>
+.res-err{background:var(--dn-bg);border:1px solid rgba(192,57,43,.2);border-radius:var(--r);padding:12px 14px;color:var(--dn);font-size:12px;margin-bottom:12px;}@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+:root{--sa-orange:#e66000;--sa-orange-light:#fff3ec;--sa-black:#0a0a0a;--font:'Inter',sans-serif;}
+.hdr{background:var(--sa-black)!important;border-bottom:none!important;}
+.logo-txt{color:#fff!important;font-family:'Source Serif 4',serif!important;font-size:15px!important;font-weight:700!important;}
+.htab{color:rgba(255,255,255,.5)!important;font-size:11px!important;padding:0 9px!important;}
+.htab:hover{color:rgba(255,255,255,.85)!important;}
+.htab.on{color:#fff!important;border-bottom-color:var(--sa-orange)!important;}
+.hright{border-left-color:rgba(255,255,255,.12)!important;}
+.utxt{color:rgba(255,255,255,.4)!important;}
+.fx-wrap{color:rgba(255,255,255,.4)!important;}
+.fx-wrap input{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:#fff!important;}
+.pill{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;}
+.pill button{color:rgba(255,255,255,.5)!important;}
+.pill button.on{background:rgba(255,255,255,.18)!important;color:#fff!important;box-shadow:none!important;}
+.ibtn{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:rgba(255,255,255,.7)!important;}
+.rbtn{background:var(--sa-orange)!important;color:#fff!important;border-radius:4px!important;font-weight:600!important;}
+.hnav{overflow:hidden!important;}
+.gold{color:var(--sa-orange)!important;}
+.kbar.g{background:var(--sa-orange)!important;}
+.bsm.pri,.bpri,.strat-gen-btn{background:var(--sa-orange)!important;border-color:var(--sa-orange)!important;border-radius:4px!important;}
+.bsm.exp{border-color:var(--sa-orange)!important;color:var(--sa-orange)!important;}
+.icv{color:var(--sa-orange)!important;font-family:'Source Serif 4',serif!important;}
+.bnav{background:var(--sa-black)!important;border-top:1px solid #1a1a1a!important;}
+.bnav-item .bi-lbl{color:rgba(255,255,255,.4)!important;}
+.bnav-item.on .bi-lbl{color:var(--sa-orange)!important;}
+.res-chip:hover,.res-search-wrap button{background:var(--sa-orange)!important;border-color:var(--sa-orange)!important;}
+.res-tab.on{color:var(--sa-orange)!important;border-bottom-color:var(--sa-orange)!important;}
+.res-hero{border-top-color:var(--sa-orange)!important;}
+.holdings-search-wrap{display:flex;align-items:center;gap:8px;margin-bottom:10px;background:var(--white);border:1px solid var(--line2);border-radius:4px;padding:6px 12px;}
+.holdings-search-wrap input{flex:1;background:none;border:none;outline:none;font-size:13px;color:var(--ink);}
+.holdings-search-wrap input::placeholder{color:var(--ink3);}</style>
 </head>
 <body>
 
@@ -656,7 +686,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div id="householdBars" style="flex:1;min-width:200px;height:8px;border-radius:4px;overflow:hidden;display:flex;"></div>
     <div id="householdLegend" style="display:flex;gap:12px;font-size:11px;font-family:var(--mono);"></div>
   </div>
-  <div class="shead">
+  <div class="holdings-search-wrap"><span style="color:var(--ink3)">🔍</span><input type="text" placeholder="Search positions by ticker, name, or account…" oninput="holdingsSearch(this.value)"></div><div class="shead">
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span class="stitle">All positions</span>
       <div class="pill" id="ownerPill">
@@ -3074,7 +3104,10 @@ async function init() {
   autoCreateBin();
 }
 
-init();
+let _holdQ='';
+function holdingsSearch(q){_holdQ=q.toLowerCase().trim();renderHoldings();renderMobileCards();renderListView();}
+const _ofp=filteredPositions;
+function filteredPositions(){let r=_ofp();if(_holdQ)r=r.filter(p=>p.tk.toLowerCase().includes(_holdQ)||p.nm.toLowerCase().includes(_holdQ)||(p.ac||'').toLowerCase().includes(_holdQ));return r;}init();
 // ── RESEARCH TAB ────────────────────────────────────────────────────────────
 const RES_API_KEY = ['sk-ant-api03-8Y2DPA0wvFFhvaTMQJ-tREwyXykvEVCGKXAi0juya7CeS','rXx777voapfbZYZXi3RddRMR21PByOELkYT0GiEIQ-0b4A3QAA'].join('');
 
