@@ -2620,8 +2620,9 @@ function setOwner(o, el) {
 }
 
 function filteredPositions() {
-  if(ownerFilter === 'All') return positions;
-  return positions.filter(p => (p.owner || 'Craig') === ownerFilter);
+  let fps = ownerFilter === 'All' ? positions : positions.filter(p => (p.owner || 'Craig') === ownerFilter);
+  if(_holdQ) fps = fps.filter(p => p.tk.toLowerCase().includes(_holdQ) || p.nm.toLowerCase().includes(_holdQ));
+  return fps;
 }
 
 function setHoldView(v, el) {
@@ -3106,8 +3107,8 @@ async function init() {
 
 let _holdQ='';
 function holdingsSearch(q){_holdQ=q.toLowerCase().trim();renderHoldings();renderMobileCards();renderListView();}
-const _ofp=filteredPositions;
-function filteredPositions(){let r=_ofp();if(_holdQ)r=r.filter(p=>p.tk.toLowerCase().includes(_holdQ)||p.nm.toLowerCase().includes(_holdQ)||(p.ac||'').toLowerCase().includes(_holdQ));return r;}init();
+
+
 // ── RESEARCH TAB ────────────────────────────────────────────────────────────
 const RES_API_KEY = ['sk-ant-api03-8Y2DPA0wvFFhvaTMQJ-tREwyXykvEVCGKXAi0juya7CeS','rXx777voapfbZYZXi3RddRMR21PByOELkYT0GiEIQ-0b4A3QAA'].join('');
 
