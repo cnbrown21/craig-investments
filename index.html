@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brown's Investment Tracker</title>
+<title>Craig's Investment Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -489,8 +489,7 @@ html.dark .bnav-item.on .bi-icon{filter:brightness(2);}
 .view-toggle{display:flex;background:var(--paper);border:1px solid var(--line2);border-radius:20px;padding:2px;gap:2px;}
 .view-toggle button{background:none;border:none;padding:3px 10px;border-radius:16px;font-size:11px;font-weight:500;font-family:var(--font);color:var(--ink3);cursor:pointer;transition:all .15s;}
 .view-toggle button.on{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.1);}
-html.dark .view-toggle button.on.view-toggle button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;}
-#ownerPill button.on{background:#e66000!important;color:#fff!important;}{box-shadow:0 1px 3px rgba(0,0,0,.4);}
+html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 .mob-list{display:none;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);overflow:hidden;}
 /* Cards and list respond to .active class on ALL screen sizes */
 .mob-card.active{display:flex;}
@@ -581,48 +580,14 @@ html.dark .view-toggle button.on.view-toggle button.on{background:#e66000!import
 .res-ldot:nth-child(2){animation-delay:.2s;}
 .res-ldot:nth-child(3){animation-delay:.4s;}
 @keyframes res-pulse{0%,100%{opacity:.2;transform:scale(.85)}50%{opacity:1;transform:scale(1.1)}}
-.res-err{background:var(--dn-bg).bsm.pri{background:#e66000!important;border-color:#e66000!important;color:#fff!important;border-radius:4px!important;}.pill button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;border-radius:16px!important;}.pill button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;border-radius:16px!important;}
-.view-toggle button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;}
-.htab.on{color:#fff!important;border-bottom-color:#e66000!important;}
-.pill button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;};border:1px solid rgba(192,57,43,.2);border-radius:var(--r);padding:12px 14px;color:var(--dn);font-size:12px;margin-bottom:12px;}@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
-:root{--sa-orange:#e66000;--sa-orange-light:#fff3ec;--sa-black:#0a0a0a;--font:'Inter',sans-serif;}
-.hdr{background:var(--sa-black)!important;border-bottom:none!important;}
-.logo-txt{color:#fff!important;font-family:'Source Serif 4',serif!important;font-size:15px!important;font-weight:700!important;}
-.htab{color:rgba(255,255,255,.5)!important;font-size:11px!important;padding:0 9px!important;}
-.htab:hover{color:rgba(255,255,255,.85)!important;}
-.htab.on{color:#fff!important;border-bottom-color:var(--sa-orange)!important;}
-.hright{border-left-color:rgba(255,255,255,.12)!important;}
-.utxt{color:rgba(255,255,255,.4)!important;}
-.fx-wrap{color:rgba(255,255,255,.4)!important;}
-.fx-wrap input{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:#fff!important;}
-.pill{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;}
-.pill button{color:rgba(255,255,255,.5)!important;}
-.pill button.on{background:rgba(255,255,255,.18)!important;color:#fff!important;box-shadow:none!important;}
-.ibtn{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.15)!important;color:rgba(255,255,255,.7)!important;}
-.rbtn{background:var(--sa-orange)!important;color:#fff!important;border-radius:4px!important;font-weight:600!important;}
-.hnav{overflow:hidden!important;}
-.gold{color:var(--sa-orange)!important;}
-.kbar.g{background:var(--sa-orange)!important;}
-.bsm.pri,.bpri,.strat-gen-btn{background:var(--sa-orange)!important;border-color:var(--sa-orange)!important;border-radius:4px!important;}
-.bsm.exp{border-color:var(--sa-orange)!important;color:var(--sa-orange)!important;}
-.icv{color:var(--sa-orange)!important;font-family:'Source Serif 4',serif!important;}
-.bnav{background:var(--sa-black)!important;border-top:1px solid #1a1a1a!important;}
-.bnav-item .bi-lbl{color:rgba(255,255,255,.4)!important;}
-.bnav-item.on .bi-lbl{color:var(--sa-orange)!important;}
-.res-chip:hover,.res-search-wrap button{background:var(--sa-orange)!important;border-color:var(--sa-orange)!important;}
-.res-tab.on{color:var(--sa-orange)!important;border-bottom-color:var(--sa-orange)!important;}
-.res-hero{border-top-color:var(--sa-orange)!important;}
-.holdings-search-wrap{display:flex;align-items:center;gap:8px;margin-bottom:10px;background:var(--white);border:1px solid var(--line2);border-radius:4px;padding:6px 12px;}
-.holdings-search-wrap input{flex:1;background:none;border:none;outline:none;font-size:13px;color:var(--ink);}
-.holdings-search-wrap input::placeholder{color:var(--ink3);}</style>
+.res-err{background:var(--dn-bg);border:1px solid rgba(192,57,43,.2);border-radius:var(--r);padding:12px 14px;color:var(--dn);font-size:12px;margin-bottom:12px;}</style>
 </head>
 <body>
 
 <div class="hdr">
   <div class="logo"><div class="logo-txt">Craig's Investment Tracker</div></div>
   <nav class="hnav">
-    <div class="htab on"  data-view="holdings"
-onclick="switchView('holdings')">Holdings</div>
+    <div class="htab on"  onclick="ST('holdings',this)">Holdings</div>
     <div class="htab"     onclick="ST('accounts',this)">Accounts</div>
     <div class="htab"     onclick="ST('income',this)">Income</div>
     <div class="htab"     onclick="ST('allocation',this)">Allocation</div>
@@ -662,62 +627,16 @@ onclick="switchView('holdings')">Holdings</div>
 <!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner" style="grid-template-columns:repeat(11,1fr)">
-
-    <div class="bnav-item on" data-view="holdings" onclick="switchView('holdings')">
-      <span class="bi-icon">📊</span>
-      <span class="bi-lbl">Holdings</span>
-    </div>
-
-    <div class="bnav-item" data-view="accounts" onclick="switchView('accounts')">
-      <span class="bi-icon">🏦</span>
-      <span class="bi-lbl">Accounts</span>
-    </div>
-
-    <div class="bnav-item" data-view="income" onclick="switchView('income')">
-      <span class="bi-icon">💰</span>
-      <span class="bi-lbl">Income</span>
-    </div>
-
-    <div class="bnav-item" data-view="allocation" onclick="switchView('allocation')">
-      <span class="bi-icon">🥧</span>
-      <span class="bi-lbl">Alloc</span>
-    </div>
-
-    <div class="bnav-item" data-view="performance" onclick="switchView('performance')">
-      <span class="bi-icon">📈</span>
-      <span class="bi-lbl">Perf</span>
-    </div>
-
-    <div class="bnav-item" data-view="goals" onclick="switchView('goals')">
-      <span class="bi-icon">🎯</span>
-      <span class="bi-lbl">Goals</span>
-    </div>
-
-    <div class="bnav-item" data-view="strategy" onclick="switchView('strategy')">
-      <span class="bi-icon">⚡</span>
-      <span class="bi-lbl">Strategy</span>
-    </div>
-
-    <div class="bnav-item" data-view="realized" onclick="switchView('realized')">
-      <span class="bi-icon">✅</span>
-      <span class="bi-lbl">Realized</span>
-    </div>
-
-    <div class="bnav-item" data-view="charts" onclick="switchView('charts')">
-      <span class="bi-icon">📉</span>
-      <span class="bi-lbl">Charts</span>
-    </div>
-
-    <div class="bnav-item" data-view="watchlist" onclick="switchView('watchlist')">
-      <span class="bi-icon">👁</span>
-      <span class="bi-lbl">Watch</span>
-    </div>
-
-<div class="bnav-item" data-view="research" onclick="switchView('research')">
-  <span class="bi-icon">🔍</span>
-  <span class="bi-lbl">Research</span>
-</div>
-
+    <div class="bnav-item on"  onclick="STM('holdings',this)"><span class="bi-icon">📊</span><span class="bi-lbl">Holdings</span></div>
+    <div class="bnav-item"     onclick="STM('accounts',this)"><span class="bi-icon">🏦</span><span class="bi-lbl">Accounts</span></div>
+    <div class="bnav-item"     onclick="STM('income',this)"><span class="bi-icon">💰</span><span class="bi-lbl">Income</span></div>
+    <div class="bnav-item"     onclick="STM('allocation',this)"><span class="bi-icon">🥧</span><span class="bi-lbl">Alloc</span></div>
+    <div class="bnav-item"     onclick="STM('performance',this)"><span class="bi-icon">📈</span><span class="bi-lbl">Perf</span></div>
+    <div class="bnav-item"     onclick="STM('goals',this)"><span class="bi-icon">🎯</span><span class="bi-lbl">Goals</span></div>
+    <div class="bnav-item"     onclick="STM('strategy',this)"><span class="bi-icon">⚡</span><span class="bi-lbl">Strategy</span></div>
+    <div class="bnav-item"     onclick="STM('realized',this)"><span class="bi-icon">✅</span><span class="bi-lbl">Realized</span></div>
+    <div class="bnav-item"     onclick="STM('charts',this)"><span class="bi-icon">📉</span><span class="bi-lbl">Charts</span></div>
+    <div class="bnav-item"     onclick="STM('watchlist',this)"><span class="bi-icon">👁</span><span class="bi-lbl">Watch</span></div><div class="bnav-item"     onclick="STM('research',this)"><span class="bi-icon">&#128269;</span><span class="bi-lbl">Research</span></div>
   </div>
 </nav>
 
@@ -725,11 +644,7 @@ onclick="switchView('holdings')">Holdings</div>
 
 <!-- ── HOLDINGS ── -->
 <div class="view on" id="view-holdings">
-  <div id="alertBanner"></div><div style="margin-bottom:10px;display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line2);border-radius:20px;padding:6px 14px;max-width:320px;">
-  <span style="font-size:12px;color:var(--ink3);">🔍</span>
-  <input type="text" placeholder="Research a stock… Enter to go" onkeydown="if(event.key==='Enter'&&this.value.trim()){var tk=this.value.trim().toUpperCase();this.value='';document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.querySelectorAll('.htab').forEach(t=>t.classList.remove('on'));document.getElementById('view-research').classList.add('on');document.querySelectorAll('.htab').forEach(function(t){if(t.textContent.includes('Research'))t.classList.add('on');});resQuickSearch(tk);}" style="flex:1;background:none;border:none;outline:none;font-size:12px;color:var(--ink);font-family:var(--font);">
-</div><div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:8px 14px;max-width:360px;box-shadow:0 1px 4px rgba(0,0,0,.06);">
-
+  <div id="alertBanner"></div>
   <!-- Quick glance goal widget -->
   <div id="quickGlanceWidget" style="margin-bottom:14px;"></div>
   <div class="kstrip" id="kpiStrip" style="grid-template-columns:repeat(6,1fr)"></div>
@@ -740,73 +655,48 @@ onclick="switchView('holdings')">Holdings</div>
     <span style="font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;">Household</span>
     <div id="householdBars" style="flex:1;min-width:200px;height:8px;border-radius:4px;overflow:hidden;display:flex;"></div>
     <div id="householdLegend" style="display:flex;gap:12px;font-size:11px;font-family:var(--mono);"></div>
- <div class="shead">
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-    <span class="stitle">All positions</span>
-    <div class="pill" id="ownerPill">
-      <button class="on" onclick="setOwner('All',this)">Household</button>
-      <button onclick="setOwner('Craig',this)">Craig</button>
-      <button onclick="setOwner('Kit',this)">Kit</button>
+  </div>
+  <div class="shead">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span class="stitle">All positions</span>
+      <div class="pill" id="ownerPill">
+        <button class="on" onclick="setOwner('All',this)">Household</button>
+        <button onclick="setOwner('Craig',this)">Craig</button>
+        <button onclick="setOwner('Kit',this)">Kit</button>
+      </div>
+    </div>
+    <div class="sacts">
+      <div class="view-toggle" id="holdToggle">
+        <button class="on" onclick="setHoldView('table',this)">Table</button>
+        <button onclick="setHoldView('cards',this)">Cards</button>
+        <button onclick="setHoldView('list',this)">List</button>
+      </div>
+      <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
+      <button class="bsm pri" onclick="openAdd()">+ Add</button>
     </div>
   </div>
-  <div class="sacts">
- <div class="sacts" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;">
-  <div style="display:flex;align-items:center;gap:5px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:3px 10px;height:30px;">
-    <span style="color:var(--ink3);font-size:11px;">🔍</span>
-    <input type="text" placeholder="Filter holdings…" oninput="holdingsSearch(this.value)" style="background:none;border:none;outline:none;font-size:11px;color:var(--ink);width:110px;font-family:var(--font);">
-  </div>
-  <div class="view-toggle" id="holdToggle" style="flex-shrink:0;">
-    <button class="on" onclick="setHoldView('table',this)">Table</button>
-    <button onclick="setHoldView('cards',this)">Cards</button>
-    <button onclick="setHoldView('list',this)">List</button>
-  </div>
-  <button class="bsm exp" onclick="exportPositionsCSV()" style="flex-shrink:0;">↓ CSV</button>
-  <button class="bsm pri" onclick="openAdd()" style="flex-shrink:0;background:#e66000!important;border-color:#e66000!important;color:#fff!important;">+ Add</button>
+  <!-- Desktop table -->
+  <div class="tcard tbl-desktop" id="holdTable"><div class="tscroll"><table>
+    <thead><tr>
+      <th>Ticker</th><th>Account</th><th>Owner</th><th>Category</th><th class="r">Qty</th>
+      <th class="r">Yield %</th><th class="r">Avg price</th><th class="r">Live price</th><th class="r">Mkt value</th>
+      <th class="r">Total paid in</th><th class="r">NAV gain/loss</th>
+      <th class="r">Dividends</th><th class="r">Total return</th>
+      <th class="r">Ret %</th><th class="r"></th>
+    </tr></thead>
+    <tbody id="holdBody"></tbody>
+  </table></div></div>
+  <!-- Mobile cards -->
+  <div class="mob-card active" id="holdCards"></div>
+  <!-- Mobile list -->
+  <div class="mob-list" id="holdList"></div>
 </div>
-</div>
-      <button class="on" onclick="setOwner('All',this)">Household</button>
-      <button onclick="setOwner('Craig',this)">Craig</button>
-      <button onclick="setOwner('Kit',this)">Kit</button>
-    </div>
-  </div>
-  <div class="sacts">
-    <div style="display:flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:4px 10px;">
-      <span style="color:var(--ink3);font-size:12px;">🔍</span>
-      <input type="text" placeholder="Search ticker…" oninput="holdingsSearch(this.value)" style="background:none;border:none;outline:none;font-size:12px;color:var(--ink);width:140px;font-family:var(--font);">
-    </div>
-    <div class="view-toggle" id="holdToggle">
-      <button class="on" onclick="setHoldView('table',this)">Table</button>
-      <button onclick="setHoldView('cards',this)">Cards</button>
-      <button onclick="setHoldView('list',this)">List</button>
-    </div>
-    <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
-    <button class="bsm pri" onclick="openAdd()">+ Add</button>
-  </div>
-</div>
-    <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
-    <button class="bsm pri" onclick="openAdd()">+ Add</button>
-  </div>
-</div>
-<!-- Desktop table -->
-<div class="tcard tbl-desktop" id="holdTable"><div class="tscroll"><table>
-  <thead><tr>
-    <th>Ticker</th><th>Account</th><th>Owner</th><th>Category</th><th class="r">Qty</th>
-    <th class="r">Yield %</th><th class="r">Avg price</th><th class="r">Live price</th><th class="r">Mkt value</th>
-    <th class="r">Total paid in</th><th class="r">NAV gain/loss</th>
-    <th class="r">Dividends</th><th class="r">Total return</th>
-    <th class="r">Ret %</th><th class="r"></th>
-  </tr></thead>
-  <tbody id="holdBody"></tbody>
-</table></div></div>
-<!-- Mobile cards -->
-<div class="mob-card active" id="holdCards"></div>
-<!-- Mobile list -->
-<div class="mob-list" id="holdList"></div>
-</div>
+
 <!-- ── ACCOUNTS ── -->
 <div class="view" id="view-accounts">
   <div class="ag" id="acctGrid"></div>
 </div>
+
 <!-- ── INCOME ── -->
 <div class="view" id="view-income">
   <div class="ikpi" id="incKpi"></div>
@@ -1647,20 +1537,9 @@ function renderKPI(){
   // Alert banner
   const alerts=positions.filter(p=>ST_stats(p).isAlert||ST_stats(p).isTarget);
   const banner=document.getElementById('alertBanner');
-if (alerts.length) {
-  banner.innerHTML = `
-    <div class="alertbanner">
-      <div class="alertbanner-title">
-        ⚠️ ${alerts.length} position alert${alerts.length > 1 ? 's' : ''}
-      </div>
-      ${alerts.map(p => {
-        const s = ST_stats(p);
-        return `<div class="alert-item">${s?.name || ''}</div>`;
-      }).join('')}
-    </div>
-  `;
-} else {
-  banner.innerHTML = '';
+  if(alerts.length){
+    banner.innerHTML=`<div class="alertbanner"><div class="alertbanner-title">⚠ ${alerts.length} position alert${alerts.length>1?'s':''}</div>${alerts.map(p=>{const s=ST_stats(p);return`<div class="alertitem">${p.tk} (${p.ac}) — ${s.isAlert?`down ${Pct(s.totalPct)} from cost, exceeds your ${p.alert}% alert threshold`:``}${s.isTarget&&s.isAlert?' · ':''}${s.isTarget?`hit target price $${N(p.target)} ${p.cy}`:''}</div>`;}).join('')}</div>`;
+  } else { banner.innerHTML=''; }
 }
 
 function renderHoldings(){
@@ -1941,27 +1820,18 @@ function renderWatchlist(){
 }
 
 // ── MOBILE NAV ────────────────────────────────────────────────────────────────
-function switchView(v) {
-  // hide all views
-  document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
-
-  // show selected view
-  const target = document.getElementById('view-' + v);
-  if (!target) {
-    console.warn('Missing view:', v);
-    return;
-  }
-  target.classList.add('on');
-
-  // sync TOP nav
-  document.querySelectorAll('.htab').forEach(t => {
-    t.classList.toggle('on', t.dataset.view === v);
+function STM(v,el){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.bnav-item').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.htab').forEach((t,i)=>{
+    const views=['holdings','accounts','income','allocation','performance','realized','charts','watchlist'];
+    t.classList.toggle('on',views[i]===v);
   });
-
-  // sync BOTTOM nav
-  document.querySelectorAll('.bnav-item').forEach(t => {
-    t.classList.toggle('on', t.dataset.view === v);
- 
+  document.getElementById('view-'+v).classList.add('on');
+  el.classList.add('on');
+  window.scrollTo(0,0);
+  if(v==='charts') renderCharts();
+}
 function setCcyMob(c,el){
   setCcy(c,document.querySelectorAll('#ccyPill button')[c==='CAD'?0:1]);
   document.querySelectorAll('#ccyPillMob button').forEach(b=>b.classList.remove('on'));
@@ -2720,9 +2590,8 @@ function setOwner(o, el) {
 }
 
 function filteredPositions() {
-  let fps = ownerFilter === 'All' ? positions : positions.filter(p => (p.owner || 'Craig') === ownerFilter);
-  if(_holdQ) fps = fps.filter(p => p.tk.toLowerCase().includes(_holdQ) || p.nm.toLowerCase().includes(_holdQ));
-  return fps;
+  if(ownerFilter === 'All') return positions;
+  return positions.filter(p => (p.owner || 'Craig') === ownerFilter);
 }
 
 function setHoldView(v, el) {
@@ -2767,7 +2636,7 @@ function ST(v,el){
   document.querySelectorAll('.htab').forEach(x=>x.classList.remove('on'));
   document.getElementById('view-'+v).classList.add('on');
   el.classList.add('on');
-  const views=['holdings','accounts','income','allocation','performance','realized','charts','watchlist','research'];
+  const views=['holdings','accounts','income','allocation','performance','realized','charts','watchlist'];
   document.querySelectorAll('.bnav-item').forEach((t,i)=>t.classList.toggle('on',views[i]===v));
   if(v==='charts') renderCharts();
 }
@@ -3205,10 +3074,7 @@ async function init() {
   autoCreateBin();
 }
 
-let _holdQ='';
-function holdingsSearch(q){_holdQ=q.toLowerCase().trim();renderHoldings();renderMobileCards();renderListView();}
-
-
+init();
 // ── RESEARCH TAB ────────────────────────────────────────────────────────────
 const RES_API_KEY = ['sk-ant-api03-8Y2DPA0wvFFhvaTMQJ-tREwyXykvEVCGKXAi0juya7CeS','rXx777voapfbZYZXi3RddRMR21PByOELkYT0GiEIQ-0b4A3QAA'].join('');
 
