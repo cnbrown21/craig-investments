@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+z<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -584,8 +584,6 @@ html.dark .view-toggle button.on.view-toggle button.on{background:#e66000!import
 .res-err{background:var(--dn-bg).bsm.pri{background:#e66000!important;border-color:#e66000!important;color:#fff!important;border-radius:4px!important;}.pill button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;border-radius:16px!important;}.pill button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;border-radius:16px!important;}
 .view-toggle button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;}
 .htab.on{color:#fff!important;border-bottom-color:#e66000!important;}
-.view-toggle button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;}
-.htab.on{color:#fff!important;border-bottom-color:#e66000!important;}
 .pill button.on{background:#e66000!important;color:#fff!important;box-shadow:none!important;};border:1px solid rgba(192,57,43,.2);border-radius:var(--r);padding:12px 14px;color:var(--dn);font-size:12px;margin-bottom:12px;}@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
 :root{--sa-orange:#e66000;--sa-orange-light:#fff3ec;--sa-black:#0a0a0a;--font:'Inter',sans-serif;}
 .hdr{background:var(--sa-black)!important;border-bottom:none!important;}
@@ -685,8 +683,6 @@ html.dark .view-toggle button.on.view-toggle button.on{background:#e66000!import
   <input type="text" placeholder="Research a stock… Enter to go" onkeydown="if(event.key==='Enter'&&this.value.trim()){var tk=this.value.trim().toUpperCase();this.value='';document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.querySelectorAll('.htab').forEach(t=>t.classList.remove('on'));document.getElementById('view-research').classList.add('on');document.querySelectorAll('.htab').forEach(function(t){if(t.textContent.includes('Research'))t.classList.add('on');});resQuickSearch(tk);}" style="flex:1;background:none;border:none;outline:none;font-size:12px;color:var(--ink);font-family:var(--font);">
 </div><div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:8px 14px;max-width:360px;box-shadow:0 1px 4px rgba(0,0,0,.06);">
 
-  <input type="text" placeholder="Research any stock… type ticker + Enter" onkeydown="if(event.key==='Enter'&&this.value.trim()){var tk=this.value.trim().toUpperCase();this.value='';document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.querySelectorAll('.htab').forEach(t=>t.classList.remove('on'));document.getElementById('view-research').classList.add('on');document.querySelectorAll('.htab').forEach(function(t){if(t.textContent.includes('Research'))t.classList.add('on');});resQuickSearch(tk);}" style="flex:1;background:none;border:none;outline:none;font-size:12px;color:var(--ink);font-family:var(--font);">
-</div>
   <!-- Quick glance goal widget -->
   <div id="quickGlanceWidget" style="margin-bottom:14px;"></div>
   <div class="kstrip" id="kpiStrip" style="grid-template-columns:repeat(6,1fr)"></div>
@@ -1891,7 +1887,7 @@ function STM(v,el){
   document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.bnav-item').forEach(x=>x.classList.remove('on'));
   document.querySelectorAll('.htab').forEach((t,i)=>{
-    const views=['holdings','accounts','income','allocation','performance','realized','charts','watchlist','research'];
+   const views=['holdings','accounts','income','allocation','performance','realized','charts','watchlist','research'];
     t.classList.toggle('on',views[i]===v);
   });
   document.getElementById('view-'+v).classList.add('on');
