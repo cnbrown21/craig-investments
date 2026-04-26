@@ -686,47 +686,49 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div id="householdBars" style="flex:1;min-width:200px;height:8px;border-radius:4px;overflow:hidden;display:flex;"></div>
     <div id="householdLegend" style="display:flex;gap:12px;font-size:11px;font-family:var(--mono);"></div>
   </div>
-  <div class="holdings-search-wrap"><span style="color:var(--ink3)">🔍</span><input type="text" placeholder="Search positions by ticker, name, or account…" oninput="holdingsSearch(this.value)"></div><div class="shead">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span class="stitle">All positions</span>
-      <div class="pill" id="ownerPill">
-        <button class="on" onclick="setOwner('All',this)">Household</button>
-        <button onclick="setOwner('Craig',this)">Craig</button>
-        <button onclick="setOwner('Kit',this)">Kit</button>
-      </div>
-    </div>
-    <div class="sacts">
-      <div class="view-toggle" id="holdToggle">
-        <button class="on" onclick="setHoldView('table',this)">Table</button>
-        <button onclick="setHoldView('cards',this)">Cards</button>
-        <button onclick="setHoldView('list',this)">List</button>
-      </div>
-      <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
-      <button class="bsm pri" onclick="openAdd()">+ Add</button>
+  <div class="holdings-search-wrap"><div class="shead">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span class="stitle">All positions</span>
+    <div class="pill" id="ownerPill">
+      <button class="on" onclick="setOwner('All',this)">Household</button>
+      <button onclick="setOwner('Craig',this)">Craig</button>
+      <button onclick="setOwner('Kit',this)">Kit</button>
     </div>
   </div>
-  <!-- Desktop table -->
-  <div class="tcard tbl-desktop" id="holdTable"><div class="tscroll"><table>
-    <thead><tr>
-      <th>Ticker</th><th>Account</th><th>Owner</th><th>Category</th><th class="r">Qty</th>
-      <th class="r">Yield %</th><th class="r">Avg price</th><th class="r">Live price</th><th class="r">Mkt value</th>
-      <th class="r">Total paid in</th><th class="r">NAV gain/loss</th>
-      <th class="r">Dividends</th><th class="r">Total return</th>
-      <th class="r">Ret %</th><th class="r"></th>
-    </tr></thead>
-    <tbody id="holdBody"></tbody>
-  </table></div></div>
-  <!-- Mobile cards -->
-  <div class="mob-card active" id="holdCards"></div>
-  <!-- Mobile list -->
-  <div class="mob-list" id="holdList"></div>
+  <div class="sacts">
+    <div style="display:flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:4px 10px;">
+      <span style="color:var(--ink3);font-size:12px;">🔍</span>
+      <input type="text" placeholder="Search ticker…" oninput="holdingsSearch(this.value)" style="background:none;border:none;outline:none;font-size:12px;color:var(--ink);width:140px;font-family:var(--font);">
+    </div>
+    <div class="view-toggle" id="holdToggle">
+      <button class="on" onclick="setHoldView('table',this)">Table</button>
+      <button onclick="setHoldView('cards',this)">Cards</button>
+      <button onclick="setHoldView('list',this)">List</button>
+    </div>
+    <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
+    <button class="bsm pri" onclick="openAdd()">+ Add</button>
+  </div>
 </div>
-
+<!-- Desktop table -->
+<div class="tcard tbl-desktop" id="holdTable"><div class="tscroll"><table>
+  <thead><tr>
+    <th>Ticker</th><th>Account</th><th>Owner</th><th>Category</th><th class="r">Qty</th>
+    <th class="r">Yield %</th><th class="r">Avg price</th><th class="r">Live price</th><th class="r">Mkt value</th>
+    <th class="r">Total paid in</th><th class="r">NAV gain/loss</th>
+    <th class="r">Dividends</th><th class="r">Total return</th>
+    <th class="r">Ret %</th><th class="r"></th>
+  </tr></thead>
+  <tbody id="holdBody"></tbody>
+</table></div></div>
+<!-- Mobile cards -->
+<div class="mob-card active" id="holdCards"></div>
+<!-- Mobile list -->
+<div class="mob-list" id="holdList"></div>
+</div>
 <!-- ── ACCOUNTS ── -->
 <div class="view" id="view-accounts">
   <div class="ag" id="acctGrid"></div>
 </div>
-
 <!-- ── INCOME ── -->
 <div class="view" id="view-income">
   <div class="ikpi" id="incKpi"></div>
