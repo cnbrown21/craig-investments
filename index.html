@@ -685,11 +685,29 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <span style="font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;">Household</span>
     <div id="householdBars" style="flex:1;min-width:200px;height:8px;border-radius:4px;overflow:hidden;display:flex;"></div>
     <div id="householdLegend" style="display:flex;gap:12px;font-size:11px;font-family:var(--mono);"></div>
-  </div>
-  <div class="shead">
+ <div class="shead">
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
     <span class="stitle">All positions</span>
     <div class="pill" id="ownerPill">
+      <button class="on" onclick="setOwner('All',this)">Household</button>
+      <button onclick="setOwner('Craig',this)">Craig</button>
+      <button onclick="setOwner('Kit',this)">Kit</button>
+    </div>
+  </div>
+  <div class="sacts">
+    <div style="display:flex;align-items:center;gap:6px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:4px 10px;">
+      <span style="color:var(--ink3);font-size:12px;">🔍</span>
+      <input type="text" placeholder="Search ticker…" oninput="holdingsSearch(this.value)" style="background:none;border:none;outline:none;font-size:12px;color:var(--ink);width:140px;font-family:var(--font);">
+    </div>
+    <div class="view-toggle" id="holdToggle">
+      <button class="on" onclick="setHoldView('table',this)">Table</button>
+      <button onclick="setHoldView('cards',this)">Cards</button>
+      <button onclick="setHoldView('list',this)">List</button>
+    </div>
+    <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
+    <button class="bsm pri" onclick="openAdd()">+ Add</button>
+  </div>
+</div>
       <button class="on" onclick="setOwner('All',this)">Household</button>
       <button onclick="setOwner('Craig',this)">Craig</button>
       <button onclick="setOwner('Kit',this)">Kit</button>
