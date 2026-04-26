@@ -680,9 +680,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 <!-- ── HOLDINGS ── -->
 <div class="view on" id="view-holdings">
   <div id="alertBanner"></div><div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:8px 14px;max-width:360px;box-shadow:0 1px 4px rgba(0,0,0,.06);">
-  <span style="font-size:13px;">🔍</span>
-  <div style="margin-bottom:12px;display:flex;align-items:center;gap:8px;background:var(--white);border:1px solid var(--line2);border-radius:var(--r);padding:8px 14px;max-width:360px;">
-  <span style="font-size:13px;">🔍</span>
+
   <input type="text" placeholder="Research any stock… type ticker + Enter" onkeydown="if(event.key==='Enter'&&this.value.trim()){var tk=this.value.trim().toUpperCase();this.value='';document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.querySelectorAll('.htab').forEach(t=>t.classList.remove('on'));document.getElementById('view-research').classList.add('on');document.querySelectorAll('.htab').forEach(function(t){if(t.textContent.includes('Research'))t.classList.add('on');});resQuickSearch(tk);}" style="flex:1;background:none;border:none;outline:none;font-size:12px;color:var(--ink);font-family:var(--font);">
 </div>
   <!-- Quick glance goal widget -->
