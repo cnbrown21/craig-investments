@@ -686,7 +686,7 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
     <div id="householdBars" style="flex:1;min-width:200px;height:8px;border-radius:4px;overflow:hidden;display:flex;"></div>
     <div id="householdLegend" style="display:flex;gap:12px;font-size:11px;font-family:var(--mono);"></div>
   </div>
-  <div class="holdings-search-wrap"><div class="shead">
+  <div class="shead">
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
     <span class="stitle">All positions</span>
     <div class="pill" id="ownerPill">
@@ -705,6 +705,10 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
       <button onclick="setHoldView('cards',this)">Cards</button>
       <button onclick="setHoldView('list',this)">List</button>
     </div>
+    <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
+    <button class="bsm pri" onclick="openAdd()">+ Add</button>
+  </div>
+</div>
     <button class="bsm exp" onclick="exportPositionsCSV()">↓ CSV</button>
     <button class="bsm pri" onclick="openAdd()">+ Add</button>
   </div>
