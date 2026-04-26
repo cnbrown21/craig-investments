@@ -1647,9 +1647,20 @@ function renderKPI(){
   // Alert banner
   const alerts=positions.filter(p=>ST_stats(p).isAlert||ST_stats(p).isTarget);
   const banner=document.getElementById('alertBanner');
-  if(alerts.length){
-    banner.innerHTML=`<div class="alertbanner"><div class="alertbanner-title">⚠ ${alerts.length} position alert${alerts.length>1?'s':''}</div>${alerts.map(p=>{const s=ST_stats(p);return`<div class="alertitem">${p.tk} (${p.ac}) — ${s.isAlert?`down ${Pct(s.totalPct)} from cost, exceeds your ${p.alert}% alert threshold`:``}${s.isTarget&&s.isAlert?' · ':''}${s.isTarget?`hit target price $${N(p.target)} ${p.cy}`:''}</div>`;}).join('')}</div>`;
-  } else { banner.innerHTML=''; }
+if (alerts.length) {
+  banner.innerHTML = `
+    <div class="alertbanner">
+      <div class="alertbanner-title">
+        ⚠️ ${alerts.length} position alert${alerts.length > 1 ? 's' : ''}
+      </div>
+      ${alerts.map(p => {
+        const s = ST_stats(p);
+        return `<div class="alert-item">${s?.name || ''}</div>`;
+      }).join('')}
+    </div>
+  `;
+} else {
+  banner.innerHTML = '';
 }
 
 function renderHoldings(){
