@@ -621,7 +621,8 @@ html.dark .view-toggle button.on.view-toggle button.on{background:#e66000!import
 <div class="hdr">
   <div class="logo"><div class="logo-txt">Craig's Investment Tracker</div></div>
   <nav class="hnav">
-    <div class="htab on"  onclick="ST('holdings',this)">Holdings</div>
+    <div class="htab on"  data-view="holdings"
+onclick="switchView('holdings')">Holdings</div>
     <div class="htab"     onclick="ST('accounts',this)">Accounts</div>
     <div class="htab"     onclick="ST('income',this)">Income</div>
     <div class="htab"     onclick="ST('allocation',this)">Allocation</div>
@@ -661,16 +662,62 @@ html.dark .view-toggle button.on.view-toggle button.on{background:#e66000!import
 <!-- BOTTOM NAV -->
 <nav class="bnav">
   <div class="bnav-inner" style="grid-template-columns:repeat(11,1fr)">
-    <div class="bnav-item on"  onclick="STM('holdings',this)"><span class="bi-icon">📊</span><span class="bi-lbl">Holdings</span></div>
-    <div class="bnav-item"     onclick="STM('accounts',this)"><span class="bi-icon">🏦</span><span class="bi-lbl">Accounts</span></div>
-    <div class="bnav-item"     onclick="STM('income',this)"><span class="bi-icon">💰</span><span class="bi-lbl">Income</span></div>
-    <div class="bnav-item"     onclick="STM('allocation',this)"><span class="bi-icon">🥧</span><span class="bi-lbl">Alloc</span></div>
-    <div class="bnav-item"     onclick="STM('performance',this)"><span class="bi-icon">📈</span><span class="bi-lbl">Perf</span></div>
-    <div class="bnav-item"     onclick="STM('goals',this)"><span class="bi-icon">🎯</span><span class="bi-lbl">Goals</span></div>
-    <div class="bnav-item"     onclick="STM('strategy',this)"><span class="bi-icon">⚡</span><span class="bi-lbl">Strategy</span></div>
-    <div class="bnav-item"     onclick="STM('realized',this)"><span class="bi-icon">✅</span><span class="bi-lbl">Realized</span></div>
-    <div class="bnav-item"     onclick="STM('charts',this)"><span class="bi-icon">📉</span><span class="bi-lbl">Charts</span></div>
-    <div class="bnav-item"     onclick="STM('watchlist',this)"><span class="bi-icon">👁</span><span class="bi-lbl">Watch</span></div><div class="bnav-item"     onclick="STM('research',this)"><span class="bi-icon">&#128269;</span><span class="bi-lbl">Research</span></div>
+
+    <div class="bnav-item on" data-view="holdings" onclick="switchView('holdings')">
+      <span class="bi-icon">📊</span>
+      <span class="bi-lbl">Holdings</span>
+    </div>
+
+    <div class="bnav-item" data-view="accounts" onclick="switchView('accounts')">
+      <span class="bi-icon">🏦</span>
+      <span class="bi-lbl">Accounts</span>
+    </div>
+
+    <div class="bnav-item" data-view="income" onclick="switchView('income')">
+      <span class="bi-icon">💰</span>
+      <span class="bi-lbl">Income</span>
+    </div>
+
+    <div class="bnav-item" data-view="allocation" onclick="switchView('allocation')">
+      <span class="bi-icon">🥧</span>
+      <span class="bi-lbl">Alloc</span>
+    </div>
+
+    <div class="bnav-item" data-view="performance" onclick="switchView('performance')">
+      <span class="bi-icon">📈</span>
+      <span class="bi-lbl">Perf</span>
+    </div>
+
+    <div class="bnav-item" data-view="goals" onclick="switchView('goals')">
+      <span class="bi-icon">🎯</span>
+      <span class="bi-lbl">Goals</span>
+    </div>
+
+    <div class="bnav-item" data-view="strategy" onclick="switchView('strategy')">
+      <span class="bi-icon">⚡</span>
+      <span class="bi-lbl">Strategy</span>
+    </div>
+
+    <div class="bnav-item" data-view="realized" onclick="switchView('realized')">
+      <span class="bi-icon">✅</span>
+      <span class="bi-lbl">Realized</span>
+    </div>
+
+    <div class="bnav-item" data-view="charts" onclick="switchView('charts')">
+      <span class="bi-icon">📉</span>
+      <span class="bi-lbl">Charts</span>
+    </div>
+
+    <div class="bnav-item" data-view="watchlist" onclick="switchView('watchlist')">
+      <span class="bi-icon">👁</span>
+      <span class="bi-lbl">Watch</span>
+    </div>
+
+<div class="bnav-item" data-view="research" onclick="switchView('research')">
+  <span class="bi-icon">🔍</span>
+  <span class="bi-lbl">Research</span>
+</div>
+
   </div>
 </nav>
 
@@ -1883,18 +1930,27 @@ function renderWatchlist(){
 }
 
 // ── MOBILE NAV ────────────────────────────────────────────────────────────────
-function STM(v,el){
-  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('.bnav-item').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('.htab').forEach((t,i)=>{
-   const views=['holdings','accounts','income','allocation','performance','realized','charts','watchlist','research'];
-    t.classList.toggle('on',views[i]===v);
+function switchView(v) {
+  // hide all views
+  document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
+
+  // show selected view
+  const target = document.getElementById('view-' + v);
+  if (!target) {
+    console.warn('Missing view:', v);
+    return;
+  }
+  target.classList.add('on');
+
+  // sync TOP nav
+  document.querySelectorAll('.htab').forEach(t => {
+    t.classList.toggle('on', t.dataset.view === v);
   });
-  document.getElementById('view-'+v).classList.add('on');
-  el.classList.add('on');
-  window.scrollTo(0,0);
-  if(v==='charts') renderCharts();
-}
+
+  // sync BOTTOM nav
+  document.querySelectorAll('.bnav-item').forEach(t => {
+    t.classList.toggle('on', t.dataset.view === v);
+ 
 function setCcyMob(c,el){
   setCcy(c,document.querySelectorAll('#ccyPill button')[c==='CAD'?0:1]);
   document.querySelectorAll('#ccyPillMob button').forEach(b=>b.classList.remove('on'));
