@@ -1119,7 +1119,7 @@ function loadStore() {
 }
 
 function saveStore() {
-  const data = { positions, watchlist, trades, snapshots, targets, goals };
+  const data = { positions, watchlist, trades, snapshots, targets, goals, deletedIds: [...deletedIds] };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch(e) {}
   if (syncEnabled) cloudSave(data);
 }
@@ -1257,6 +1257,8 @@ function mergePositions(stored, def) {
 }
 
 let positions  = mergePositions(stored?.positions, DEF);
+let deletedIds = new Set(stored?.deletedIds || []);
+positions = positions.filter(p => !deletedIds.has(p.id));
 let watchlist  = stored?.watchlist  || DEF_WL;
 let trades     = stored?.trades     || [];
 let snapshots  = stored?.snapshots  || [];
@@ -2728,7 +2730,7 @@ function savePos(){
   else{positions.push({id:++nextId,tk,nm,ac,cy,owner,qty,cost,yld,src,alert,target,notes,dists:[]});fetchOne(tk,cy).then(()=>renderAll());toast('Position added');}
   CO('posOvl');saveStore();renderAll();
 }
-function delPos(id){if(!confirm('Remove this position?'))return;positions=positions.filter(p=>p.id!==id);saveStore();renderAll();toast('Removed');}
+function delPos(id){if(!confirm('Remove this position?'))return;positions=positions.filter(p=>p.id!==id);deletedIds.add(id);saveStore();renderAll();toast('Removed');}
 
 // ── DIST MODAL ────────────────────────────────────────────────────────────────
 function openDist(id){
@@ -3053,13 +3055,14 @@ async function init() {
   }
 
   if (cloudData) {
-    if (cloudData.positions)  positions  = mergePositions(cloudData.positions, DEF);
+    if (cloudData.deletedIds) deletedIds = new Set(cloudData.deletedIds);
+    if (cloudData.positions)  positions  = mergePositions(cloudData.positions, DEF).filter(p => !deletedIds.has(p.id));
     if (cloudData.watchlist)  watchlist  = cloudData.watchlist;
     if (cloudData.trades)     trades     = cloudData.trades;
     if (cloudData.snapshots)  snapshots  = cloudData.snapshots;
     if (cloudData.targets)    targets    = cloudData.targets;
     if (cloudData.goals)      goals      = cloudData.goals;
-    try { localStorage.setItem(SK, JSON.stringify({positions,watchlist,trades,snapshots,targets,goals})); } catch(e) {}
+    try { localStorage.setItem(SK, JSON.stringify({positions,watchlist,trades,snapshots,targets,goals,deletedIds:[...deletedIds]})); } catch(e) {}
     showSyncStatus('✓ Loaded from cloud');
   }
 
