@@ -3055,7 +3055,7 @@ async function init() {
 
   if (cloudData) {
     if (cloudData.deletedIds) deletedIds = new Set(cloudData.deletedIds);
-    if (cloudData.positions)  positions  = mergePositions(cloudData.positions, DEF).filter(p => !deletedIds.has(p.id));
+    if (cloudData.positions)  positions  = cloudData.positions.filter(p => !deletedIds.has(p.id));
     if (cloudData.watchlist)  watchlist  = cloudData.watchlist;
     if (cloudData.trades)     trades     = cloudData.trades;
     if (cloudData.snapshots)  snapshots  = cloudData.snapshots;
