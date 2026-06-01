@@ -1156,7 +1156,7 @@ async function cloudLoad() {
   if (!tok) { console.log('cloudLoad: no token stored'); return null; }
   try {
     const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
-      headers: { 'Authorization': `token ${tok}`, 'Cache-Control': 'no-cache' }
+      headers: { 'Authorization': `token ${tok}` }
     });
     if (!r.ok) { console.log('cloudLoad failed:', r.status, r.statusText); return null; }
     const d = await r.json();
