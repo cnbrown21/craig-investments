@@ -1152,16 +1152,20 @@ async function cloudSave(data) {
 }
 
 async function cloudLoad() {
+  const tok = getGHToken();
+  if (!tok) { console.log('cloudLoad: no token stored'); return null; }
   try {
     const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
-      headers: { 'Authorization': `token ${getGHToken()}` }
+      headers: { 'Authorization': `token ${tok}`, 'Cache-Control': 'no-cache' }
     });
-    if (!r.ok) return null;
+    if (!r.ok) { console.log('cloudLoad failed:', r.status, r.statusText); return null; }
     const d = await r.json();
     _ghFileSha = d.sha;
     const decoded = decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))));
-    return JSON.parse(decoded);
-  } catch(e) { return null; }
+    const parsed = JSON.parse(decoded);
+    console.log('cloudLoad: loaded', parsed.positions?.length, 'positions');
+    return parsed;
+  } catch(e) { console.log('cloudLoad error:', e); return null; }
 }
 
 function showSyncStatus(msg) {
