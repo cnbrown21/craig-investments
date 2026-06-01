@@ -1098,20 +1098,19 @@ html.dark .view-toggle button.on{box-shadow:0 1px 3px rgba(0,0,0,.4);}
 <div class="toast" id="toast"></div>
 
 <script>
-// ── STORAGE — JSONBin cloud sync + localStorage fallback ─────────────────────
-// JSONBin.io: free, never pauses, syncs across all devices.
-// HOW TO SET UP (one-time, 2 minutes):
-//   1. Go to jsonbin.io → sign up free
-//   2. Go to API Keys → create a Master Key → paste below as JSONBIN_KEY
-//   3. Click "Create Bin" (or the app will auto-create one on first save)
-//   4. Paste the Bin ID below as JSONBIN_BIN
-// Once set, all your data syncs to the cloud automatically.
+// ── STORAGE — GitHub API cloud sync + localStorage fallback ──────────────────
+// Token stored in localStorage only — never in code.
+// On first load the app prompts for the token once, then saves it locally.
 
-const JSONBIN_KEY = '$2a$10$xBW1PGop/XNtz8pqKUrPveBpa3UL4AD8U/GLKdbvZ0pFqo0DkhvKa';
-const JSONBIN_BIN = '69e500a9aaba88219716bdfb';
+const GH_REPO  = 'cnbrown21/craig-investments';
+const GH_FILE  = 'data.json';
 const SK = 'craig_v5';
-let syncEnabled = JSONBIN_KEY !== 'YOUR_MASTER_KEY_HERE' && JSONBIN_BIN !== 'YOUR_BIN_ID_HERE';
+const GH_TOKEN_KEY = 'craig_gh_token';
+function getGHToken() { try { return localStorage.getItem(GH_TOKEN_KEY) || ''; } catch(e) { return ''; } }
+function setGHToken(t) { try { localStorage.setItem(GH_TOKEN_KEY, t); } catch(e) {} }
+const syncEnabled = true;
 let isSyncing = false;
+let _ghFileSha = null;
 
 function loadStore() {
   try { const d = localStorage.getItem(SK); if (d) return JSON.parse(d); } catch(e) {}
@@ -1121,19 +1120,31 @@ function loadStore() {
 function saveStore() {
   const data = { positions, watchlist, trades, snapshots, targets, goals, deletedIds: [...deletedIds] };
   try { localStorage.setItem(SK, JSON.stringify(data)); } catch(e) {}
-  if (syncEnabled) cloudSave(data);
+  cloudSave(data);
 }
 
 async function cloudSave(data) {
   if (isSyncing) return;
   isSyncing = true;
   try {
-    await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN}`, {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const body = { message: 'Auto-save portfolio data', content };
+    if (_ghFileSha) body.sha = _ghFileSha;
+    const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
-      body: JSON.stringify(data)
+      headers: {
+        'Authorization': `token ${getGHToken()}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
     });
-    showSyncStatus('✓ Synced');
+    if (r.ok) {
+      const d = await r.json();
+      _ghFileSha = d?.content?.sha || _ghFileSha;
+      showSyncStatus('✓ Saved to GitHub');
+    } else {
+      showSyncStatus('⚠ Save failed');
+    }
   } catch(e) {
     showSyncStatus('⚠ Offline');
   }
@@ -1141,37 +1152,21 @@ async function cloudSave(data) {
 }
 
 async function cloudLoad() {
-  if (!syncEnabled) return null;
   try {
-    const r = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN}/latest`, {
-      headers: { 'X-Master-Key': JSONBIN_KEY }
+    const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_FILE}`, {
+      headers: { 'Authorization': `token ${getGHToken()}` }
     });
     if (!r.ok) return null;
     const d = await r.json();
-    return d?.record || null;
+    _ghFileSha = d.sha;
+    const decoded = decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))));
+    return JSON.parse(decoded);
   } catch(e) { return null; }
 }
 
 function showSyncStatus(msg) {
   const el = document.getElementById('syncStatus');
-  if (el) { el.textContent = msg; el.style.opacity = '1'; setTimeout(() => el.style.opacity = '0', 2000); }
-}
-
-// Auto-create bin if key is set but no bin ID yet
-async function autoCreateBin() {
-  if (JSONBIN_KEY === 'YOUR_MASTER_KEY_HERE') return;
-  if (JSONBIN_BIN !== 'YOUR_BIN_ID_HERE') return;
-  try {
-    const r = await fetch('https://api.jsonbin.io/v3/b', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Name': 'craig-investments' },
-      body: JSON.stringify({ init: true })
-    });
-    const d = await r.json();
-    if (d?.metadata?.id) {
-      toast('✓ Cloud sync created! Bin ID: ' + d.metadata.id + ' — copy this into JSONBIN_BIN in the file.');
-    }
-  } catch(e) {}
+  if (el) { el.textContent = msg; el.style.opacity = '1'; setTimeout(() => el.style.opacity = '0', 3000); }
 }
 
 // ── DEFAULT DATA ─────────────────────────────────────────────────────────────
@@ -3088,7 +3083,7 @@ async function init() {
   autoCreateBin();
 }
 
-init();
+init().then(() => checkGHTokenPrompt());
 // ── RESEARCH TAB ────────────────────────────────────────────────────────────
 const RES_API_KEY = ['sk-ant-api03-8Y2DPA0wvFFhvaTMQJ-tREwyXykvEVCGKXAi0juya7CeS','rXx777voapfbZYZXi3RddRMR21PByOELkYT0GiEIQ-0b4A3QAA'].join('');
 
@@ -3186,5 +3181,37 @@ function resSR(label,val,cls){
   return '<tr><td>'+label+'</td><td class="'+(cls||'')+'">'+val+'</td></tr>';
 }
 // ── END RESEARCH TAB ─────────────────────────────────────────────────────────</script>
+
+<!-- GitHub sync token setup -->
+<div id="ghTokenOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:var(--bg);border-radius:12px;padding:28px 32px;max-width:460px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px;">🔑 Connect GitHub Sync</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Your portfolio data will be saved to your GitHub repo automatically. Paste your token once and it stays saved in this browser.</p>
+    <input id="ghTokenInp" type="password" placeholder="github_pat_..." style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--txt);font-size:13px;margin-bottom:12px;"/>
+    <div style="display:flex;gap:8px;">
+      <button class="bpri" onclick="saveGHToken()" style="flex:1;">Save &amp; Connect</button>
+      <button class="bsec" onclick="document.getElementById('ghTokenOverlay').style.display='none'">Skip</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function saveGHToken() {
+  const t = document.getElementById('ghTokenInp').value.trim();
+  if (!t) return;
+  setGHToken(t);
+  document.getElementById('ghTokenOverlay').style.display = 'none';
+  showSyncStatus('✓ Token saved — syncing...');
+  saveStore();
+}
+function checkGHTokenPrompt() {
+  if (!getGHToken()) {
+    const el = document.getElementById('ghTokenOverlay');
+    if (el) el.style.display = 'flex';
+  }
+}
+</script>
+
 </body>
 </html>
+
