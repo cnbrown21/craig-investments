@@ -1255,7 +1255,7 @@ function mergePositions(stored, def) {
   });
 }
 
-let positions  = mergePositions(stored?.positions, DEF);
+let positions  = (stored?.positions && stored.positions.length) ? stored.positions : mergePositions(null, DEF);
 let deletedIds = new Set(stored?.deletedIds || []);
 positions = positions.filter(p => !deletedIds.has(p.id));
 let watchlist  = stored?.watchlist  || DEF_WL;
