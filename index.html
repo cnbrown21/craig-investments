@@ -3079,8 +3079,6 @@ async function init() {
   refreshAll();
   setInterval(refreshAll, 300000); // refresh prices every 5 minutes
 
-  // Auto-create bin if needed
-  autoCreateBin();
 }
 
 init().then(() => checkGHTokenPrompt());
