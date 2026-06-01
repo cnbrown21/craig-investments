@@ -17,22 +17,6 @@
       "dists": []
     },
     {
-      "id": 24,
-      "tk": "SHOP",
-      "nm": "Shopify Inc.",
-      "ac": "Corp",
-      "cy": "CAD",
-      "owner": "Craig",
-      "qty": 6.7641,
-      "cost": 162.8081,
-      "yld": 0,
-      "src": "auto",
-      "alert": 20,
-      "target": null,
-      "notes": "Additional SHOP lot.",
-      "dists": []
-    },
-    {
       "id": 39,
       "tk": "BTC",
       "nm": "Bitcoin",
@@ -456,5 +440,7 @@
       "notes": ""
     }
   ],
-  "deletedIds": []
+  "deletedIds": [
+    24
+  ]
 }
