@@ -1240,19 +1240,17 @@ const stored=loadStore();
 // Only user-entered fields (dists, notes, alert, target) are preserved from stored.
 function mergePositions(stored, def) {
   if(!stored || !stored.length) return def;
-  const storedMap = new Map(stored.map(p => [p.id, p]));
-  return def.map(d => {
-    const s = storedMap.get(d.id);
-    if (!s) return d; // new position not in stored — use DEF as-is
-    // Use DEF for all structural fields; only keep user-editable fields from stored
-    return {
-      ...d,
-      dists:  s.dists  ?? d.dists,
-      notes:  s.notes  ?? d.notes,
-      alert:  s.alert  ?? d.alert,
-      target: s.target ?? d.target,
-    };
+  // Trust stored data fully — user edits (qty, cost, yld, etc.) must survive
+  const defMap = new Map(def.map(p => [p.id, p]));
+  const result = stored.map(s => {
+    const d = defMap.get(s.id);
+    // Merge: stored wins for all user-editable fields
+    return { ...(d || {}), ...s };
   });
+  // Add any new DEF positions not yet in stored
+  stored.forEach(s => defMap.delete(s.id));
+  defMap.forEach(d => result.push(d));
+  return result;
 }
 
 let positions  = (stored?.positions && stored.positions.length) ? stored.positions : mergePositions(null, DEF);
