@@ -209,22 +209,6 @@
       "dists": []
     },
     {
-      "id": 15,
-      "tk": "SCHD",
-      "nm": "Schwab US Dividend Equity ETF",
-      "ac": "RRSP",
-      "owner": "Craig",
-      "cy": "USD",
-      "qty": 273.7486,
-      "cost": 31.35,
-      "yld": 3.56,
-      "src": "auto",
-      "alert": null,
-      "target": null,
-      "notes": "Solid US dividend equity. Steady hold. DRIP on.",
-      "dists": []
-    },
-    {
       "id": 16,
       "tk": "VFV",
       "nm": "Vanguard S&P 500 Index ETF",
@@ -470,6 +454,7 @@
   "deletedIds": [
     24,
     8,
-    18
+    18,
+    15
   ]
 }
