@@ -1462,7 +1462,7 @@ function DM(n,ncy,compact=false){
 }
 const Pct=n=>n==null||isNaN(n)?'—':(n>=0?'+':'')+N(n,2)+'%';
 const C=n=>n>0?'up':n<0?'dn':'dim';
-function manDivs(p){return p.dists.reduce((s,d)=>s+parseFloat(d.amt||0),0);}
+function manDivs(p){return (p.dists||[]).reduce((s,d)=>s+parseFloat(d.amt||0),0);}
 function autDiv(p){return p.src==='auto'?(autoDivs[p.tk]||0)*p.qty:0;}
 function allDivs(p){return manDivs(p)+autDiv(p);}
 function ST_stats(p){
