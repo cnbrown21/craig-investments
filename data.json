@@ -257,22 +257,6 @@
       "dists": []
     },
     {
-      "id": 18,
-      "tk": "XIC",
-      "nm": "iShares Core S&P/TSX Capped Composite Index ETF",
-      "ac": "RRSP",
-      "owner": "Craig",
-      "cy": "CAD",
-      "qty": 138.0888,
-      "cost": 54.2,
-      "yld": 2.5,
-      "src": "auto",
-      "alert": null,
-      "target": null,
-      "notes": "Canadian broad market exposure. Steady hold.",
-      "dists": []
-    },
-    {
       "id": 19,
       "tk": "HHIS",
       "nm": "Harvest Diversified High Income Shares ETF",
@@ -485,6 +469,7 @@
   ],
   "deletedIds": [
     24,
-    8
+    8,
+    18
   ]
 }
