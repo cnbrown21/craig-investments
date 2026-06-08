@@ -29,7 +29,7 @@
       "src": "auto",
       "alert": null,
       "target": null,
-      "notes": "Holdco growth position. Minimal distributions \u2014 tax efficient.",
+      "notes": "Holdco growth position. Minimal distributions — tax efficient.",
       "dists": []
     },
     {
@@ -45,7 +45,7 @@
       "src": "manual",
       "alert": null,
       "target": null,
-      "notes": "HOLDCO BUYING PLAN \u2014 $1,500/month. ICDD efficient \u2014 eligible dividends nearly tax free at corporate level.",
+      "notes": "HOLDCO BUYING PLAN — $1,500/month. ICDD efficient — eligible dividends nearly tax free at corporate level.",
       "dists": []
     },
     {
@@ -61,7 +61,7 @@
       "src": "manual",
       "alert": null,
       "target": null,
-      "notes": "HOLDCO BUYING PLAN \u2014 $2,000/month. Bitcoin ecosystem covered calls. Also consider converting BTC to HBTE when BTC recovers to ~$116,309 CAD breakeven.",
+      "notes": "HOLDCO BUYING PLAN — $2,000/month. Bitcoin ecosystem covered calls. Also consider converting BTC to HBTE when BTC recovers to ~$116,309 CAD breakeven.",
       "dists": []
     },
     {
@@ -77,7 +77,7 @@
       "src": "manual",
       "alert": null,
       "target": null,
-      "notes": "HOLDCO BUYING PLAN \u2014 $1,500/month. NASDAQ income with capital gains component. Tax efficient in holdco.",
+      "notes": "HOLDCO BUYING PLAN — $1,500/month. NASDAQ income with capital gains component. Tax efficient in holdco.",
       "dists": []
     },
     {
@@ -93,7 +93,7 @@
       "src": "auto",
       "alert": null,
       "target": null,
-      "notes": "HOLDCO BUYING PLAN \u2014 $1,000/month. Growth anchor. Low yield. Ballast. Protects passive income threshold.",
+      "notes": "HOLDCO BUYING PLAN — $1,000/month. Growth anchor. Low yield. Ballast. Protects passive income threshold.",
       "dists": []
     },
     {
@@ -113,22 +113,6 @@
       "dists": []
     },
     {
-      "id": 8,
-      "tk": "BIGY",
-      "nm": "Evolve US Equity UltraYield ETF",
-      "ac": "RRSP",
-      "owner": "Craig",
-      "cy": "CAD",
-      "qty": 130,
-      "cost": 23.86,
-      "yld": 31.25,
-      "src": "manual",
-      "alert": null,
-      "target": null,
-      "notes": "SELL \u2014 redundant with QQCL and HHIS. Redeploy $2,340 to CLSA RRSP.",
-      "dists": []
-    },
-    {
       "id": 9,
       "tk": "CLSA",
       "nm": "Brompton Split Corp. Class A Share ETF",
@@ -140,7 +124,7 @@
       "yld": 13.36,
       "src": "manual",
       "alert": 15,
-      "target": 12.0,
+      "target": 12,
       "notes": "CORE RRSP POSITION. DRIP always on. Buy more if price drops to $12-13 and NAV discount widens to 7%+. Deploy $23K RRSP room on dip. Check bromptongroup.com monthly. $0.18/share/month.",
       "dists": []
     },
@@ -184,12 +168,12 @@
       "owner": "Craig",
       "cy": "CAD",
       "qty": 3501,
-      "cost": 15.0,
+      "cost": 15,
       "yld": 22.41,
       "src": "manual",
       "alert": null,
       "target": null,
-      "notes": "HOLD LONG \u2014 income engine. Part of ~$200K distributions collected. ~$2K/month combined with MSTY. Review only if monthly drops below $1K or price below $10.",
+      "notes": "HOLD LONG — income engine. Part of ~$200K distributions collected. ~$2K/month combined with MSTY. Review only if monthly drops below $1K or price below $10.",
       "dists": []
     },
     {
@@ -205,7 +189,7 @@
       "src": "manual",
       "alert": null,
       "target": null,
-      "notes": "HOLD LONG \u2014 largest MSTY position. Income engine. Net positive when ~$200K total distributions factored in.",
+      "notes": "HOLD LONG — largest MSTY position. Income engine. Net positive when ~$200K total distributions factored in.",
       "dists": []
     },
     {
@@ -317,7 +301,7 @@
       "src": "manual",
       "alert": null,
       "target": null,
-      "notes": "HOLD LONG \u2014 income engine. Part of ~$200K distributions collected.",
+      "notes": "HOLD LONG — income engine. Part of ~$200K distributions collected.",
       "dists": []
     },
     {
@@ -369,22 +353,6 @@
       "dists": []
     },
     {
-      "id": 24,
-      "tk": "MSTE",
-      "nm": "Harvest Strategy Inc. Enhanced High Income ETF",
-      "ac": "TFSA",
-      "owner": "Kit",
-      "cy": "CAD",
-      "qty": 2841,
-      "cost": 13.54,
-      "yld": 22.41,
-      "src": "manual",
-      "alert": null,
-      "target": null,
-      "notes": "Kit TFSA. HOLD LONG \u2014 income engine.",
-      "dists": []
-    },
-    {
       "id": 25,
       "tk": "MSTR",
       "nm": "Strategy Inc.",
@@ -413,7 +381,7 @@
       "src": "manual",
       "alert": null,
       "target": null,
-      "notes": "Kit TFSA. HOLD LONG \u2014 income engine.",
+      "notes": "Kit TFSA. HOLD LONG — income engine.",
       "dists": []
     }
   ],
@@ -439,14 +407,29 @@
       "tk": "CLSA",
       "nm": "Brompton Split Corp. Class A Share ETF",
       "cy": "CAD",
-      "target": 12.0,
-      "note": "Alert at $12 \u2014 deploy $23K RRSP sniper bullet. NAV check: bromptongroup.com monthly."
+      "target": 12,
+      "note": "Alert at $12 — deploy $23K RRSP sniper bullet. NAV check: bromptongroup.com monthly."
     }
   ],
+  "trades": [],
+  "snapshots": [
+    {
+      "date": "2026-04-19",
+      "val": 420000,
+      "note": "Opening balance — April 19 2026",
+      "cy": "CAD"
+    }
+  ],
+  "targets": {
+    "yield": 60,
+    "index": 20,
+    "crypto": 10,
+    "single": 10
+  },
   "goals": [
     {
       "id": 1,
-      "name": "Portfolio \u2014 Adrian's level $2.5M",
+      "name": "Portfolio — Adrian's level $2.5M",
       "type": "portfolio",
       "ac": "All",
       "owner": "All",
@@ -457,7 +440,7 @@
     },
     {
       "id": 2,
-      "name": "Monthly income \u2014 $47K/month",
+      "name": "Monthly income — $47K/month",
       "type": "income",
       "ac": "All",
       "owner": "All",
@@ -497,9 +480,11 @@
       "target": 50000,
       "start": 0,
       "date": null,
-      "notes": "NEVER exceed $50K passive income in holdco \u2014 triggers loss of SBD on EP8 active income. Under $40K = full deployment. $40-48K = pause HBTE/QQCL. $48K+ = CSU and VTV only."
+      "notes": "NEVER exceed $50K passive income in holdco — triggers loss of SBD on EP8 active income. Under $40K = full deployment. $40-48K = pause HBTE/QQCL. $48K+ = CSU and VTV only."
     }
   ],
-  "trades": [],
-  "snapshots": []
+  "deletedIds": [
+    24,
+    8
+  ]
 }
